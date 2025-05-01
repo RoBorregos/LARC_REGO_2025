@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "windows-gcc-x64",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "g++ -I<arduino-install-path>/libraries -I<arduino-install-path>/hardware/arduino/avr/cores/arduino -c c:\\Users\\danae\\Documents\\LARC\\LARC_2025(1)\\micro\\src\\drive\\drive.hpp"
+            ],
+            "compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "windows-gcc-x64",
+            "compilerArgs": [
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
