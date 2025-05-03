@@ -24,7 +24,7 @@ namespace Constants {
     }
 
     namespace GripperConstants {
-        constexpr int kOpenAngle = 60;
+        constexpr int kOpenAngle = 70;
         constexpr int kClosedAngle = 20;
     }
 

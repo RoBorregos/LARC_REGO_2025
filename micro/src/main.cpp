@@ -14,12 +14,9 @@
 #include "subsystem/Intake/Intake.hpp"
 #include "constants/constants.h"
 #include "pose2d.hpp"
-/* Drive drive = Drive();
+Drive drive = Drive();
 Gripper gripper = Gripper();
-Intake intake = Intake(); */
-
-DCMotor frontleft(Pins::kUpperMotors[0], Pins::kUpperMotors[1], Pins::kPwmPin[0], 
-               false, Pins::kEncoders[0], LOW, 1, DriveConstants::kWheelDiameter);
+Intake intake = Intake();
 
 // Timing variables
 unsigned long lastUpdateTime = 0;
@@ -29,34 +26,27 @@ void setup()
 {
   Serial.begin(9600);
   Wire.begin();
-/* 
+
   drive.setState(0);
-  gripper.setState(1);
-  intake.setState(1);
-  drive.acceptHeadingInput(Rotation2D(0)); */
+  gripper.setState(0);
+  intake.setState(0);
+  drive.acceptHeadingInput(Rotation2D(0));
   interrupts();
 }
 
 void loop()
 {
   unsigned long currentTime = millis();
-  //drive.update();
-  //gripper.update();
-  //intake.update();
+  drive.update();
+  gripper.update();
+  intake.update();
 
-  frontleft.move(100);
-
-  double encoder_count = frontleft.getPositionRotations();
   // Check if it's time to update
   if (currentTime - lastUpdateTime >= UPDATE_INTERVAL)
   {
-    Serial.println("Encoder Count: " + String(encoder_count));
+    Serial.println("HII");
+    gripper.setState(1);
+    intake.setState(1);
 
-    lastUpdateTime = currentTime;
-  }
-
-  if (encoder_count >= 1)
-  {
-    frontleft.move(0);
   }
 }
