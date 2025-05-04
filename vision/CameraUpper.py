@@ -4,7 +4,7 @@ import serial
 import time
 
 class CameraUpper:
-    def __init__(self, port=None, camera_index=0, min_area=3800, max_area=50000, max_diameter=250):
+    def __init__(self, port=None, baudrate=9600, timeout=1, camera_index=0, min_area=3800, max_area=50000, max_diameter=250):
         self.colors = {
             "Red": ([0, 129, 40], [17, 255, 255]),
             "Blue": ([99, 114, 141], [112, 255, 249]),
@@ -33,13 +33,11 @@ class CameraUpper:
         self.center_frame = (0, 0)
 
         # Initialize serial port if provided
-        self.serial = None
-        if port:
-            try:
-                self.serial = serial.Serial(port, 9600, timeout=1)
-                print(f"✅ Serial connected to {port}")
-            except serial.SerialException as e:
-                print(f"❌ Serial connection failed: {e}")
+        try:
+            self.serial = serial.Serial(port, baudrate=baudrate, timeout=timeout)
+            print(f"✅ Serial connected to {port} at {baudrate} baud.")
+        except serial.SerialException as e:
+            print(f"❌ Serial connection failed: {e}")
 
         # Initialize camera
         self.cap = cv2.VideoCapture(camera_index)
