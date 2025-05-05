@@ -33,6 +33,8 @@ namespace Pins {
     };
 
     constexpr uint8_t kGripperServoPin = 15;
+    constexpr uint8_t kUpperSorterServoPin = 14;
+    constexpr uint8_t kLowerSorterServoPin = 13;
 }
 
 #endif
