@@ -24,13 +24,8 @@ namespace Constants {
     }
 
     namespace GripperConstants {
-        constexpr int kOpenAngle = 70;
-        constexpr int kClosedAngle = 20;
-    }
-
-    namespace IntakeConstants {
-        constexpr int kIntakeSpeed = 200;
-        constexpr int kOuttakeSpeed = -200;
+        constexpr int kOpenAngle = 60;
+        constexpr int kClosedAngle = 5;
     }
 
     namespace DriveConstants {

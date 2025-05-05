@@ -21,9 +21,9 @@ class Gripper : public System {
         Gripper();
         void update() override;
         void setState(int state) override;
+        void move(int angle);  // Make move public temporarily
     private:
         PWMServo servo;
-        void move(int angle);  // Make move public temporarily
         enum class GripperState {
             CLOSED = 0,
             OPEN = 1,

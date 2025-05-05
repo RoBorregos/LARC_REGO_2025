@@ -33,8 +33,6 @@ namespace Pins {
     };
 
     constexpr uint8_t kGripperServoPin = 15;
-    constexpr uint8_t kIntakeMotorPinINA = 8;
-    constexpr uint8_t kIntakeMotorPinINB = 9;
 }
 
 #endif
