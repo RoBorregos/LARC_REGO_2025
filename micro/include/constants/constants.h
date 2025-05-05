@@ -28,6 +28,18 @@ namespace Constants {
         constexpr int kClosedAngle = 5;
     }
 
+    namespace UpperSorterConstants {
+        constexpr int kLeftAngle = 0;
+        constexpr int kCenterAngle = 90;
+        constexpr int kRightAngle = 180;
+    }
+
+    namespace LowerSorterConstants {
+        constexpr int kLeftAngle = 180;
+        constexpr int kCenterAngle = 90;
+        constexpr int kRightAngle = 0;
+    }
+
     namespace DriveConstants {
         constexpr float kWheelDiameter = 0.0762; // in m
         constexpr float kWheelRadius = kWheelDiameter / 2.0; // in m
