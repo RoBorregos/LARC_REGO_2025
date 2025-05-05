@@ -8,9 +8,10 @@
 
 #include "heading_controller.hpp"
 #include <Arduino.h>
-HeadingController::HeadingController() : pid_(PIDController(450.0f, 0.0f, 0.0f, -255.0f, 255.0f)) {
+HeadingController::HeadingController() : pid_(PIDController(375.0f, 0.0f, 0.0f, -255.0f, 255.0f)) {
     desired_heading_ = Rotation2D();
     pid_.setEnabled(true);
+    pid_.setAngleWrapping(true);
 }
 
 float HeadingController::update(Rotation2D current_heading) {

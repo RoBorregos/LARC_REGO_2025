@@ -81,12 +81,28 @@ public:
      * @return float The current output
      */
     float getOutput() const;
+    
+    /**
+     * @brief Set the angle wrapping
+     * 
+     * @param enabled Whether angle wrapping should be enabled
+     */
+    void setAngleWrapping(bool enabled);
+    
+    /**
+     * @brief Check if angle wrapping is enabled
+     * 
+     * @return true if enabled
+     * @return false if disabled
+     */
+    bool isAngleWrappingEnabled() const;
 
 private:
     double lastMeasurement_;
     double lastSetpoint_;
     double output_;
     bool enabled_;
+    bool angleWrapping_;
     PID* pid_;
 };
 
