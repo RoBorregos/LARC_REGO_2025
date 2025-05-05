@@ -1,7 +1,8 @@
 #include "PIDController.hpp"
+#include <math.h>
 
 PIDController::PIDController(float kp, float ki, float kd, float outputMin, float outputMax)
-    : lastMeasurement_(0.0), lastSetpoint_(0.0), output_(0.0), enabled_(true) {
+    : lastMeasurement_(0.0), lastSetpoint_(0.0), output_(0.0), enabled_(true), angleWrapping_(false) {
     // Initialize the PID controller with pointers to our variables
     pid_ = new PID(&lastMeasurement_, &output_, &lastSetpoint_, (double)kp, (double)ki, (double)kd, DIRECT);
      
@@ -19,6 +20,35 @@ float PIDController::update(float measurement, float setpoint) {
     if (!enabled_) {
         Serial.println("PID Controller is disabled");
         return 0.0f;
+    }
+    
+    // If angle wrapping is enabled, wrap the measurement and setpoint
+    if (angleWrapping_) {
+        // Normalize angles to [-180, 180] range
+        measurement = fmod(measurement + M_PI, 2 * M_PI);
+        if (measurement < 0) measurement += 2 * M_PI;
+        measurement -= M_PI;
+
+        setpoint = fmod(setpoint + M_PI, 2 * M_PI);
+        if (setpoint < 0) setpoint += 2 * M_PI;
+        setpoint -= M_PI;
+
+        // Calculate the error with wrapping
+        float error = setpoint - measurement;
+        if (error > M_PI) {
+            error -= 2 * M_PI;
+        } else if (error < -M_PI) {
+            error += 2 * M_PI;
+        }
+        
+        // Store the wrapped values
+        lastMeasurement_ = (double)measurement;
+        lastSetpoint_ = (double)setpoint;
+        
+        // Compute the PID output
+        pid_->Compute();
+        
+        return (float)output_;
     }
     
     // Store the current values
@@ -68,4 +98,13 @@ float PIDController::getError() const {
 
 float PIDController::getOutput() const {
     return (float)output_;
+}
+
+void PIDController::setAngleWrapping(bool enabled) {
+    angleWrapping_ = enabled;
+    Serial.println("Angle wrapping " + String(enabled ? "enabled" : "disabled"));
+}
+
+bool PIDController::isAngleWrappingEnabled() const {
+    return angleWrapping_;
 } 
