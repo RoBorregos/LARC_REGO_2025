@@ -45,9 +45,18 @@ void loop()
   lower_sorter.update();
   upper_sorter.update();
 
+  Pose2D pose = drive.getPose();
+
   if (currentTime - lastUpdateTime >= UPDATE_INTERVAL)
   {
-    static unsigned long lastStateChangeTime = 0;
+    Serial.print("X: ");
+    Serial.println(pose.getX());
+    Serial.print("Y: ");
+    Serial.println(pose.getY());
+    Serial.print("Theta: ");
+    Serial.println(pose.getTheta().getDegrees());
+
+    /* static unsigned long lastStateChangeTime = 0;
     static bool gripperState = false;
     static int lowerSorterState = 0; // Start with state 0
     static int upperSorterState = 0; // Start with state 0
@@ -69,6 +78,6 @@ void loop()
       lastStateChangeTime = currentTime;
     }
 
-    lastUpdateTime = currentTime;
+    lastUpdateTime = currentTime; */
   }
 }
