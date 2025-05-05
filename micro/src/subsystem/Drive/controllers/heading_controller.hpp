@@ -11,7 +11,9 @@
 
 #include "../lib/math/rotation2d.hpp"
 #include "../lib/controllers/PIDController.hpp"
+#include "constants/constants.h"
 
+using namespace Constants;
 class HeadingController {
     public:
         HeadingController();
