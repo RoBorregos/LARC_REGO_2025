@@ -1,119 +1,80 @@
 /*
- * @file Elevator.cpp
- * @date 12/03/2025
- * @author Dana E. Torres Estrada
+ * @file Elevador.cpp
+ * @date 25/04/2025
+ * @author Brisma Alvarez Valdez
  *
- * @brief Implementation file for controlling a dual-stepper motor elevator system.
+ * @brief Implementation of the Elevador class to control a stepper motor
  */
+#include "Elevator.h"
 
-#include "Elevator.hpp"
-
-//* Constructor
 Elevator::Elevator()
-    : left_step_pin_(Pins::kLeftStepPin), left_dir_pin_(Pins::kLeftDirPin),
-      right_step_pin_(Pins::kRightStepPin), right_dir_pin_(Pins::kRightDirPin)
+    : step_pin(Pins::kStepperPin), dir_pin(Pins::kDirPin), actual_position_cm(0.0), limit_pin(Pins::kLimitPin)
 {
-    current_height_ = ElevatorConstants::kUpperLevel;
+    pinMode(step_pin, OUTPUT);
+    pinMode(dir_pin, OUTPUT);
+    digitalWrite(dir_pin, LOW);
+    pinMode(limit_pin, INPUT_PULLUP);
 }
 
+void Elevator::Move(int steps)
+{
+    if (steps > 0)
+    {
+        digitalWrite(dir_pin, LOW);
+    }
+    else
+    {
+        digitalWrite(dir_pin, HIGH);
+    }
+
+    for (int i = 0; i < steps; i++)
+    {
+        digitalWrite(step_pin, HIGH);
+        delayMicroseconds(800);
+        digitalWrite(step_pin, LOW);
+        delayMicroseconds(800);
+    }
+}
+
+int Elevator::translateCmToSteps(float distance_cm)
+{
+    return (int)((distance_cm / (2.0 * M_PI * ElevatorConstants::kStepperRadius)) * ElevatorConstants::kStepsPerRevolution);
+}
+
+// Metodo para ver si el limit esta presionado
+bool Elevator::GetLimitState()
+{
+    return digitalRead(limit_pin) == LOW;
+}
+
+// Método para actualizar la lógica de la máquina de estados
 void Elevator::update()
 {
-    switch (elevator_state_)
-    {
-    case ElevatorState::HOME:
-        moveToHeight(ElevatorConstants::kUpperLevel);
-        break;
-    case ElevatorState::LOW_POSITION:
-        moveToHeight(ElevatorConstants::kLowerLevel);
-        break;
-    case ElevatorState::MID_POSITION:
-        moveToHeight(ElevatorConstants::kMidLevel);
-        break;
-    case ElevatorState::HIGH_POSITION:
-        moveToHeight(ElevatorConstants::kUpperLevel);
-        break;
+    switch (elevator_state_){
+        case ElevatorState::HOME:
+            target_position_cm = ElevatorConstants::kIdleLevel;
+            break;
+        case ElevatorState::LOWER:
+            target_position_cm = ElevatorConstants::kLowerLevel;
+            break;
+        case ElevatorState::MID:
+            target_position_cm = ElevatorConstants::kMidLevel;
+            break;
+        case ElevatorState::UPPER:
+            target_position_cm = ElevatorConstants::kUpperLevel;
+            break;
     }
+
+    if (GetLimitState())
+    {
+        elevator_state_ = ElevatorState::HOME;
+        actual_position_cm = 0.0;
+    }
+
+    Move(translateCmToSteps(target_position_cm - actual_position_cm));
 }
 
 void Elevator::setState(int state)
 {
     elevator_state_ = static_cast<ElevatorState>(state);
-}
-
-//* Method to move the elevator up by a specified distance in cm
-void Elevator::moveUp(float distance)
-{
-    int steps = translateCmToSteps(distance); // Convert distance to steps
-
-    // Serial.print("Elevator moving up: ");
-    // Serial.print(distance);
-    // Serial.println(" cm");
-
-    digitalWrite(left_dir_pin_, HIGH);
-    digitalWrite(right_dir_pin_, LOW);
-
-    for (int i = 0; i < steps; i++)
-    {
-        digitalWrite(left_step_pin_, HIGH);
-        digitalWrite(right_step_pin_, HIGH);
-        delayMicroseconds(1000);
-
-        digitalWrite(left_step_pin_, LOW);
-        digitalWrite(right_step_pin_, LOW);
-        delayMicroseconds(1000);
-    }
-}
-
-//* Method to move the elevator down by a specified distance in cm
-void Elevator::moveDown(float distance)
-{
-    int steps = translateCmToSteps(distance); // Convert distance to steps
-
-    // Serial.print("Elevator moving down: ");
-    // Serial.print(distance);
-    // Serial.println(" cm");
-
-    digitalWrite(left_dir_pin_, LOW);
-    digitalWrite(right_dir_pin_, HIGH);
-
-    for (int i = 0; i < steps; i++)
-    {
-        digitalWrite(left_step_pin_, HIGH);
-        digitalWrite(right_step_pin_, HIGH);
-        delayMicroseconds(1000);
-        digitalWrite(left_step_pin_, LOW);
-        digitalWrite(right_step_pin_, LOW);
-        delayMicroseconds(1000);
-    }
-}
-
-//* Method to move to a specific height in cm
-void Elevator::moveToHeight(float height)
-{
-    if (height > current_height_)
-    {
-        moveUp(height - current_height_);
-    }
-    else if (height < current_height_)
-    {
-        moveDown(current_height_ - height);
-    }
-    current_height_ = height; // Update the current height
-}
-
-//* Stop the motors
-void Elevator::stop()
-{
-    // Serial.println("Elevator stops");
-
-    digitalWrite(left_step_pin_, LOW);
-    digitalWrite(right_step_pin_, LOW);
-}
-
-/* Private methods */
-
-//* Method to convert a distance in centimeters to the corresponding number of steps. Returns number of steps required to move the given distance
-int Elevator::translateCmToSteps(float distance)
-{
-    return (int)((distance / (2 * M_PI * ElevatorConstants::kStepperRadius)) * ElevatorConstants::kStepsPerRevolution);
 }

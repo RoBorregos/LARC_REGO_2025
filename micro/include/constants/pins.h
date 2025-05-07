@@ -33,13 +33,12 @@ namespace Pins {
     };
 
     constexpr uint8_t kGripperServoPin = 15;
-    constexpr uint8_t kUpperSorterServoPin = 14;
-    constexpr uint8_t kLowerSorterServoPin = 13;
+    constexpr uint8_t kIntakeMotorPinINA = 8;
+    constexpr uint8_t kIntakeMotorPinINB = 9;
 
-    constexpr uint8_t kLeftStepPin = 10;
-    constexpr uint8_t kLeftDirPin = 11;
-    constexpr uint8_t kRightStepPin = 12;
-    constexpr uint8_t kRightDirPin = 13;
+    constexpr uint8_t kStepperPin = 10;
+    constexpr uint8_t kDirPin = 11;
+    constexpr uint8_t kLimitPin = 12;
 }
 
 #endif
