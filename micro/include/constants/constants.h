@@ -49,6 +49,14 @@ namespace Constants {
         constexpr float kHeadingControllerKi = 80.0f;
         constexpr float kHeadingControllerKd = 0.0f;
     }
+
+    namespace VisionConstants {
+        constexpr float kCenterPIDKp = 0.0f;
+        constexpr float kCenterPIDKi = 0.0f;
+        constexpr float kCenterPIDKd = 0.0f;
+        constexpr float kCenterPIDOutputMin = -255.0f;
+        constexpr float kCenterPIDOutputMax = 255.0f;
+    }
 }
 
 

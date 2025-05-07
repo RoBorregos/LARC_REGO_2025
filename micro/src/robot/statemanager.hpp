@@ -16,7 +16,7 @@
 #include "../subsystem/LowerSorter/LowerSorter.hpp"
 #include "../subsystem/UpperSorter/UpperSorter.hpp"
 #include "system.hpp"
-
+#include "actions.hpp"
 class StateManager {
 private:
     Elevator elevator_;
@@ -44,17 +44,7 @@ private:
     int current_tree_ = 0;
     int current_beans_ = 0;
     bool droped_SOBREMADURO = false;
-
     long state_start_time_ = 0; 
-
-    // Method to pick beans at any elevator level
-    void pickBean();
-    
-    // Method to center with a bean in Cam_UP range of vision
-    void centerWithBean();
-    
-    // Method to center with a certain object in Cam_Low range of vision
-    void centerWithObject();
 
 public:
     StateManager();
