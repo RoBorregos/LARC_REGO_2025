@@ -8,14 +8,15 @@
 #include "Elevator.h"
 
 // Constructor
-Elevator::Elevator(int stepPin, int dirPin, float actual_position_cm)
-    : step_pin(stepPin), dir_pin(dirPin), actual_position_cm(0.0) {}
+Elevator::Elevator(int stepPin, int dirPin, float actual_position_cm, int limit_pin)
+    : step_pin(stepPin), dir_pin(dirPin), actual_position_cm(0.0), limit_pin(limit_pin) {}
 
 // Método de inicialización
 void Elevator::setup() {
     pinMode(step_pin, OUTPUT);
     pinMode(dir_pin, OUTPUT);
     digitalWrite(dir_pin, LOW);
+    pinMode(limit_pin, INPUT_PULLUP); 
 }
 
 // Métodos privados para mover el motor
@@ -100,6 +101,11 @@ void Elevator::MaxLevel(float max_dist) {
     }
 
     actual_position_cm = max_dist;
+}
+
+// Metodo para ver si el limit esta presionado 
+bool Elevator::LimitState() {
+    return digitalRead(limit_pin) == LOW;
 }
 
 // Método para actualizar la lógica de la máquina de estados
