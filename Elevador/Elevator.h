@@ -20,6 +20,7 @@ private:
     // Pines
     const int step_pin;
     const int dir_pin;
+    const int limit_pin;
 
     float actual_position_cm;
 
@@ -34,6 +35,10 @@ private:
     void MidLevel(float mid_dist);
     void UpperLevel(float upper_dist);
     void MaxLevel(float max_dist);
+
+    // Metodo para checar el valor del limit switch e inicializarlo
+    void InitLimit();
+    bool LimitState();
     
     // States
     enum class ElevatorState {
