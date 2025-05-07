@@ -63,9 +63,15 @@ namespace Constants {
 
         constexpr float kCenterOffsetX = 0.0f;
         constexpr float kCenterOffsetY = 10.0f;
+    }
 
+    namespace BeanConstants {
+        enum BeanType {
+            NONE,
+            MADURO,
+            SOBREMADURO
+        };
     }
 }
-
 
 #endif
