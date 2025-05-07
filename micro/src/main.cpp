@@ -7,16 +7,14 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <dcmotor.hpp>
-#include "subsystem/Drive/drive.hpp"
+#include "subsystem/Drive/Drive.hpp"
 #include "constants/pins.h"
 #include "../lib/math/odometry.hpp"
 #include "subsystem/Gripper/Gripper.hpp"
-#include "subsystem/Intake/Intake.hpp"
 #include "constants/constants.h"
 #include "pose2d.hpp"
 Drive drive = Drive();
 Gripper gripper = Gripper();
-Intake intake = Intake();
 
 // Timing variables
 unsigned long lastUpdateTime = 0;
@@ -29,7 +27,6 @@ void setup()
 
   drive.setState(0);
   gripper.setState(0);
-  intake.setState(0);
   drive.acceptHeadingInput(Rotation2D(0));
   interrupts();
 }

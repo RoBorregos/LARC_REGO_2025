@@ -8,7 +8,6 @@
 
 bool centerWithObject(double elapsed_time)
 {
-    cam_low_.receiveData();
     float offsetX = cam_low_.getOffset_X();
     float offsetY = cam_low_.getOffset_Y();
     if (offsetX != 0)
@@ -16,13 +15,10 @@ bool centerWithObject(double elapsed_time)
         double outputX = centerPID_.update(offsetX, VisionConstants::kCenterOffsetX);
         double outputY = centerPID_.update(offsetY, VisionConstants::kCenterOffsetY);
         drive_.acceptInput(-outputX, outputY, 0);
+        return false;
     }
-    else
-    {
-        drive_.acceptInput(0, 0, 0);
-        return true;
-    }
-    return false;
+    drive_.acceptInput(0, 0, 0);
+    return true;
 }
 
 /**
@@ -30,14 +26,34 @@ bool centerWithObject(double elapsed_time)
  */
 bool pickBean(double elapsed_time, int level)
 {
-    gripper_.setState(1);
-    elevator_.setState(level);
-    if (centerWithObject(elapsed_time))
-    {
-        gripper_.setState(0);
-        return true;
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
     }
-    return false;
+
+    switch (state) {
+        case 0: // Set gripper and elevator
+            gripper_.setState(1);
+            elevator_.setState(level);
+            state = 1;
+            return false;
+
+        case 1: // Center and pick
+            if (centerWithObject(elapsed_time)) {
+                gripper_.setState(0);
+                state = 0;
+                state_start_time = 0;
+                return true;
+            }
+            return false;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
+    }
 }
 
 /**
@@ -45,14 +61,34 @@ bool pickBean(double elapsed_time, int level)
  */
 bool sortBean(double elapsed_time, int category)
 {
-    elevator_.setState(0);
-    upper_sorter_.setState(category);
-    
-    if (elapsed_time > 1000){
-        gripper_.setState(0);
-        return true;
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
     }
-    return false;
+
+    switch (state) {
+        case 0: // Set elevator and sorter
+            elevator_.setState(0);
+            upper_sorter_.setState(category);
+            state = 1;
+            return false;
+
+        case 1: // Wait and release
+            if (elapsed_time - state_start_time > 1000) {
+                gripper_.setState(0);
+                state = 0;
+                state_start_time = 0;
+                return true;
+            }
+            return false;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
+    }
 }
 
 /**
@@ -60,17 +96,34 @@ bool sortBean(double elapsed_time, int category)
  */
 bool exitStart(double elapsed_time)
 {
-    drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-    if (elapsed_time < 2000)
-    {
-        drive_.acceptInput(0, 100, 0);
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
     }
-    else
-    {
-        drive_.acceptInput(0, 0, 0);
-        return true;
+
+    switch (state) {
+        case 0: // Set heading and move
+            drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+            if (elapsed_time - state_start_time < 2000) {
+                drive_.acceptInput(0, 100, 0);
+                return false;
+            }
+            state = 1;
+            return false;
+
+        case 1: // Stop
+            drive_.acceptInput(0, 0, 0);
+            state = 0;
+            state_start_time = 0;
+            return true;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
     }
-    return false;
 }
 
 /**
@@ -78,17 +131,33 @@ bool exitStart(double elapsed_time)
  */
 bool searchForTrees(double elapsed_time)
 {
-    cam_low_.receiveData();
-    if (elapsed_time < 2000 || !cam_low_.objectPresent())
-    {
-        drive_.acceptInput(0, 100, 0);
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
     }
-    else
-    {
-        drive_.acceptInput(0, 0, 0);
-        return true;
+
+    switch (state) {
+        case 0: // Search
+            if (elapsed_time - state_start_time < 2000 || !cam_low_.objectPresent()) {
+                drive_.acceptInput(0, 100, 0);
+                return false;
+            }
+            state = 1;
+            return false;
+
+        case 1: // Stop
+            drive_.acceptInput(0, 0, 0);
+            state = 0;
+            state_start_time = 0;
+            return true;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
     }
-    return false;
 }
 
 /**
@@ -149,19 +218,35 @@ bool avoidRightObstacle()
  */
 bool goLeftLine(double elapsed_time)
 {
-    drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-    cam_low_.setState(1);
-    bool tree_found = cam_low_.objectPresent();
-    if (elapsed_time < 2000 && !tree_found)
-    {
-        drive_.acceptInput(-100, 0, 0);
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
     }
-    else
-    {
-        drive_.acceptInput(0, 0, 0);
-        return true;
+
+    switch (state) {
+        case 0: // Set up and move
+            drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+            cam_low_.setState(1);
+            if (elapsed_time - state_start_time < 2000 && !cam_low_.objectPresent()) {
+                drive_.acceptInput(-100, 0, 0);
+                return false;
+            }
+            state = 1;
+            return false;
+
+        case 1: // Stop
+            drive_.acceptInput(0, 0, 0);
+            state = 0;
+            state_start_time = 0;
+            return true;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
     }
-    return false;
 }
 
 /**
@@ -170,70 +255,111 @@ bool goLeftLine(double elapsed_time)
  */
 bool goRightLine(double elapsed_time)
 {
-    drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-    cam_low_.setState(1);
-    bool tree_found = cam_low_.objectPresent();
-    if (elapsed_time < 2000 && !tree_found)
-    {
-        drive_.acceptInput(100, 0, 0);
-    }
-    else
-    {
-        drive_.acceptInput(0, 0, 0);
-        return true;
-    }
-    return false;
-}
+    static int state = 0;
+    static double state_start_time = 0;
 
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
+    }
+
+    switch (state) {
+        case 0: // Set up and move
+            drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+            cam_low_.setState(1);
+            if (elapsed_time - state_start_time < 2000 && !cam_low_.objectPresent()) {
+                drive_.acceptInput(100, 0, 0);
+                return false;
+            }
+            state = 1;
+            return false;
+
+        case 1: // Stop
+            drive_.acceptInput(0, 0, 0);
+            state = 0;
+            state_start_time = 0;
+            return true;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
+    }
+}
 
 void goStorageMudo()
 {
-    /*
-     *
-     */
-    /* cam_low_->receiveData();
-
-    drive_->setState(0); // HEADING_LOCK
-    drive_->acceptHeadingInput(Rotation2D::fromDegrees(180)); */
+    drive_.setState(0);
+    drive_.acceptHeadingInput(Rotation2D::fromDegrees(180));
 }
 
 void goStoreGrown()
 {
+    // Implementation needed
 }
 
 void goStorageOvergrown()
 {
+    // Implementation needed
 }
 
-void dropBeans()
+bool dropBeans(double elapsed_time, double container_type)
 {
-    /*
-     * centrarse con el almacen
-     * girar 180°
-     * moverse hacia atras por 2 segs
-     * soltar pelotas
-     * moverse hacia adelante y girar 180 para prepararse a la siguiente caja
-     */
-    /* cam_low_->receiveData();
-    centerWithObject(); // centar con el almacen
+    static int state = 0;
+    static double state_start_time = 0;
 
-    drive_->setState(0); // HEADING_LOCK
-    drive_->acceptHeadingInput(Rotation2D::fromDegrees(180));
-
-    state_start_time_ = millis();
-    while (millis()-state_start_time_ < 2000) {
-        drive_->moveBackward(100);
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
     }
-    drive_->moveForward(0);
 
-    //almacen_->dropBalls(droped_SOBREMADURO) //Rego //0-MADURO, 1-SOBREMADURO
-    //revolver_->dropBalls() //Robo
-    delay(2000); //para asegurarse que toas las pelotas se hayan soltado
+    switch (state) {
+        case 0: // Center with storage
+            if (centerWithObject(elapsed_time)) {
+                state = 1;
+                state_start_time = elapsed_time;
+            }
+            return false;
 
-    while (millis()-state_start_time_ < 2000) {
-        drive_->acceptInput(0,100,0);
+        case 1: // Turn 180 degrees
+            drive_.setState(0);
+            drive_.acceptHeadingInput(Rotation2D::fromDegrees(180));
+            if (elapsed_time - state_start_time > 1000) {
+                state = 2;
+                state_start_time = elapsed_time;
+            }
+            return false;
+
+        case 2: // Move backwards
+            if (elapsed_time - state_start_time < 2000) {
+                drive_.acceptInput(0, -100, 0);
+            } else {
+                state = 3;
+                state_start_time = elapsed_time;
+            }
+            return false;
+
+        case 3: // Drop beans
+            drive_.acceptInput(0, 0, 0);
+            lower_sorter_.setState(container_type);
+            if (elapsed_time - state_start_time > 1000) {
+                state = 4;
+                state_start_time = elapsed_time;
+            }
+            return false;
+
+        case 4: // Move forward and turn back
+            drive_.setState(0);
+            drive_.acceptInput(0, 100, 0);
+            drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+            if (elapsed_time - state_start_time > 2000) {
+                state = 0;
+                state_start_time = 0;
+                return true;
+            }
+            return false;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
     }
-    drive_->moveForward(0);
-    drive_->setState(0); // HEADING_LOCK
-    drive_->acceptHeadingInput(Rotation2D::fromDegrees(180)); */
 }

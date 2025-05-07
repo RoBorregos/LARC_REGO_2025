@@ -16,8 +16,7 @@ extern LowerSorter lower_sorter_;
 extern UpperSorter upper_sorter_;
 extern CameraLower cam_low_;
 extern CameraUpper cam_up_;
-
-PIDController centerPID_(VisionConstants::kCenterPIDKp, VisionConstants::kCenterPIDKi, VisionConstants::kCenterPIDKd, VisionConstants::kCenterPIDOutputMin, VisionConstants::kCenterPIDOutputMax);
+extern PIDController centerPID_;
 
 bool centerWithObject(double elapsed_time);
 bool exitStart(double elapsed_time);
@@ -29,4 +28,4 @@ bool dropBeans(double elapsed_time);
 bool goLeftLine(double elapsed_time);
 bool goRightLine(double elapsed_time);
 bool pickBean(double elapsed_time, int level);
-
+bool dropBeans(double elapsed_time);
