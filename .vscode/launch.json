@@ -3,22 +3,11 @@
   "configurations": [
     {
       "name": "C/C++ Runner: Debug Session",
-      "type": "cppdbg",
+      "type": "lldb",
       "request": "launch",
       "args": [],
-      "stopAtEntry": false,
-      "externalConsole": true,
-      "cwd": "c:/Users/soyhe/Desktop/LARC/LARC_2025/micro/src",
-      "program": "c:/Users/soyhe/Desktop/LARC/LARC_2025/micro/src/build/Debug/outDebug",
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
-        {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
-        }
-      ]
+      "cwd": "/Users/jpgtzg/Documents/Personal/LARC_REGO_2025/micro/src/subsystem/Elevator",
+      "program": "/Users/jpgtzg/Documents/Personal/LARC_REGO_2025/micro/src/subsystem/Elevator/build/Debug/outDebug"
     }
   ]
 }

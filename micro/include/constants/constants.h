@@ -21,6 +21,10 @@ namespace Constants {
 
         constexpr float kStepsPerRevolution = 200;
         constexpr float kStepperRadius = 0.75; // in cm
+
+        constexpr float kP = 0.01;
+        constexpr float kI = 0.00;
+        constexpr float kD = 0.00;
     }
 
     namespace GripperConstants {
