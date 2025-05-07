@@ -5,10 +5,10 @@
  *
  * @brief Implementation of the Elevador class to control a stepper motor
  */
-#include "Elevator.h"
+#include "Elevator.hpp"
 
 Elevator::Elevator()
-    : step_pin(Pins::kStepperPin), dir_pin(Pins::kDirPin), actual_position_cm(0.0), limit_pin(Pins::kLimitPin)
+    : step_pin(Pins::kStepperPin), dir_pin(Pins::kDirPin), limit_pin(Pins::kLimitPin), actual_position_cm(0.0), target_position_cm(0.0)
 {
     pinMode(step_pin, OUTPUT);
     pinMode(dir_pin, OUTPUT);

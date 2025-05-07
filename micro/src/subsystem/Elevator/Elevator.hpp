@@ -47,7 +47,7 @@ private:
         UPPER = 4,
     };
 
-    ElevatorState elevator_state_ = ElevatorState::IDLE;
+    ElevatorState elevator_state_ = ElevatorState::HOME;
 };
 
 #endif
