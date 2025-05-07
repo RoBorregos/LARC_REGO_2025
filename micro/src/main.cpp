@@ -1,5 +1,5 @@
 /**
- * LARC 2025
+ * LARC REGO 2025
  *
  * @Roborregos
  */
@@ -15,69 +15,45 @@
 #include "pose2d.hpp"
 #include "subsystem/LowerSorter/LowerSorter.hpp"
 #include "subsystem/UpperSorter/UpperSorter.hpp"
+#include "robot/statemanager.hpp"
+#include "RobotState.h"
 
-Drive drive = Drive();
-Gripper gripper = Gripper();
-LowerSorter lower_sorter = LowerSorter();
-UpperSorter upper_sorter = UpperSorter();
-/* #include <Servo.h>
-Servo servo = Servo(); */
-
-// Timing variables
-unsigned long lastUpdateTime = 0;
-const unsigned long UPDATE_INTERVAL = 50;
+StateManager state_manager;
 
 void setup()
 {
   Serial.begin(9600);
   Wire.begin();
 
+  state_manager.setState(RobotState::INIT);
+}
+
+void loop()
+{
+  state_manager.update();
+}
+
+/* void setup()
+{
+  Serial.begin(9600);
+  Wire.begin();
+
   drive.setState(0);
-  drive.acceptHeadingInput(Rotation2D(0));
+  drive.acceptHeadingInput(Rotation2D::fromDegrees(0));
+
   interrupts();
 }
 
 void loop()
 {
-  unsigned long currentTime = millis();
+  unsigned long currentMillis = millis();
   drive.update();
-  gripper.update();
-  lower_sorter.update();
-  upper_sorter.update();
+  drive.acceptInput(0, 100, 0);
 
   Pose2D pose = drive.getPose();
-
-  if (currentTime - lastUpdateTime >= UPDATE_INTERVAL)
+  Serial.println(pose.getTheta().getDegrees());
+  if (currentMillis - previousMillis >= interval)
   {
-    Serial.print("X: ");
-    Serial.println(pose.getX());
-    Serial.print("Y: ");
-    Serial.println(pose.getY());
-    Serial.print("Theta: ");
-    Serial.println(pose.getTheta().getDegrees());
-
-    /* static unsigned long lastStateChangeTime = 0;
-    static bool gripperState = false;
-    static int lowerSorterState = 0; // Start with state 0
-    static int upperSorterState = 0; // Start with state 0
-
-    if (currentTime - lastStateChangeTime >= 3000)
-    {
-      gripperState = !gripperState;
-      gripper.setState(gripperState ? 1 : 0);
-
-      // Cycle through states 0, 1, 2
-      lowerSorterState = (lowerSorterState + 1) % 3;
-      Serial.print("Moving lower sorter to state: ");
-      Serial.println(lowerSorterState);
-      lower_sorter.setState(lowerSorterState);
-
-      upperSorterState = (upperSorterState + 1) % 3;
-      upper_sorter.setState(upperSorterState);
-
-      lastStateChangeTime = currentTime;
-    }
-
-    lastUpdateTime = currentTime; */
+    previousMillis = currentMillis;
   }
-}
+} */

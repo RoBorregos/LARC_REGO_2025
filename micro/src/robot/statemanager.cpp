@@ -4,173 +4,247 @@
  * @author Juan Pablo Gutiérrez & Dana E. Torres Estrada
  *
  * @brief Implementation file for the StateManager class, which manages the robot's state and subsystems.
- */
+*/
 
 #include "statemanager.hpp"
-/* 
-StateManager::StateManager() : state_(RobotState::INIT), calcTrackStartTime_(0),
-                               followTrackStartTime_(0), searchingRight_(false), pickingTime_(0), pickingBall_(false) {}
 
-void StateManager::stateAction()
-{
-    switch (state_)
-    {
-    case RobotState::INIT:
-        // drive_->setup();
-        elevator_->setup();
-        gripper_->Init();
-        gripper_->CameraOriented();
-        // Initialize other systems as needed
+StateManager::StateManager() :
+    elevator_(),
+    gripper_(),
+    drive_(),
+    lower_sorter_(),
+    upper_sorter_()
+{}
 
-        instructionHandler_->begin(); // Initialize I2C communication with vision
-
-        calcTrackStartTime_ = millis();
-        break;
-
-    case RobotState::IDLE:
-        drive_->moveForward(0);
-        elevator_->moveToHeight(elevator_->kIdleLevel);
-        gripper_->Close();
-        break;
-
-    case RobotState::CALC_TRACK:
-        if (!searchingRight_)
-        {
-            // primero debe mandar que avance hacia adelante
-            drive_->moveForward(200);
-            // si pasa 10 segundos, manda que avance hacia la derecha
-            if (millis() - calcTrackStartTime_ > 10000)
-            {
-                // si encuentra pelotas, manda detenerse
-                searchingRight_ = true;
-                // si esta avanzando a la derecha y encuentra pelotas, manda detenerse
-                calcTrackStartTime_ = millis();
-                // si no encuentra pelotas, y pasan 20 segundos, manda a que se detenga y idle
-            }
-        }
-        // si no encuentra pelotas, y pasan 20 segundos, manda a que se detenga y idle
-    }
-    else
-    {
-        drive_->moveRight(150);
-        if (instructionHandler_->foundBall())
-        {
-            drive_->stop();
-            setState(RobotState::FOLLOW_TRACK);
-        }
-        else if (millis() - calcTrackStartTime_ > 20000)
-        {
-            drive_->stop();
-            setState(RobotState::IDLE);
-        }
-        break;
-
-    case RobotState::FOLLOW_TRACK:
-        drive_->moveForward(200);
-
-        if (millis() - followTrackStartTime_ > 10000 && !instructionHandler_->foundBall())
-        {
-            drive_->moveRight(100); // Start lateral search
-            followTrackStartTime_ = millis();
-        }
-        else if (instructionHandler_->foundBall())
-        {
-            drive_->stop();
-            setState(RobotState::FETCH_BEAN);
-        }
-        break;
-
-    case RobotState::FETCH_BEAN:
-        if (instructionHandler_->foundBall())
-        {
-            // Alineación precisa si es necesario
-            // checar si hay pekota
-            setState(RobotState::PICK_BEAN);
-        }
-        else
-        {
-            setState(RobotState::IDLE); // Fallo en detección
-        }
-        break;
-
-    case RobotState::PICK_BEAN:
-        gripper_->Open();
-        gripper_->Run();
-        delay(2000); // Esperar a que la gripper agarre la pelota
-        // mover a la siguiente pelota
-        break;
-
-    case RobotState::DROP_BEAN:
-        break;
-
-    case RobotState::FINISH:
-        gripper_->Close();
-        drive_->moveBackward(200);
-        delay(3000);
-        drive_->moveForward(0);
-        elevator_->moveToHeight(elevator_->kIdleLevel);
-        break;
-
-    default:
-        break;
-    }
-}
-
-void StateManager::stateTransition()
-{
-    switch (state_)
-    {
-    case RobotState::INIT:
-        setState(RobotState::CALC_TRACK);
-        break;
-
-    case RobotState::IDLE:
-        break;
-
-    case RobotState::CALC_TRACK:
-        // Check conditions to transition to the next state
-        break;
-
-    case RobotState::FOLLOW_TRACK:
-        if (instructionHandler_->foundBean()) // detecta pelota
-            setState(RobotState::PICK_BEAN);
-        break;
-
-    case RobotState::FETCH_BEAN:
-        break;
-
-    case RobotState::PICK_BEAN:
-        // if completado, ya se recogieron todas las pelotas
-        setState(RobotState::FINISH);
-        break;
-
-    case RobotState::DROP_BEAN:
-        break;
-
-    case RobotState::FINISH:
-        break;
-
-    default:
-        // tendremos un case ERROR?
-        break;
-    }
-}
-
-void StateManager::setState(RobotState state)
-{
-    if (state == RobotState::CALC_TRACK)
-    {
-        calcTrackStartTime_ = millis();
-        searchingRight_ = false;
-    }
-    if (state == RobotState::FOLLOW_TRACK)
-    {
-        followTrackStartTime_ = millis();
-    }
+void StateManager::setState(RobotState state) {
     state_ = state;
+    state_start_time_ = 0; // reiniciar contador de tiempo del estado individual
 }
 
-RobotState StateManager::getState() const
-{
+RobotState StateManager::getState() {
     return state_;
-} */
+}
+
+unsigned long StateManager::getTimeSpent() {
+    return millis() - start_time_;
+}
+
+void StateManager::centerWithObject() { // !!! TODO Añadir que centrarse debe quedar a x cm
+    /* cam_low_->receiveData();
+    float offsetX = cam_low_->getOffset_X();
+
+    while (offsetX < -0.1f || offsetX > 0.1f) {
+        if (offsetX < -0.1f) {
+            drive_->moveLeft(100);
+        } else if (offsetX > 0.1f) {
+            drive_->moveRight(100);
+        }
+
+        delay(100); // pausa pequeña para dar tiempo al movimiento
+        cam_low_->receiveData();
+        offsetX = cam_low_->getOffset_X(); // Recalcula offset
+    }
+
+    drive_->moveForward(0); // Ya está centrado */
+}
+
+/*void StateManager::pickBean() {
+    bool allBeansPicked = false;
+            
+    cam_up_->receiveData();
+    int beanType = cam_up_->beanPresent();
+    //cam_up_
+    centerWithBean();
+    state_start_time_
+
+    acceptInput(0,100,0);
+
+    allBeansPicked = (cam_up_->beanPresent() == 0);
+}*/
+
+void StateManager::stateAction() {
+    switch (state_) {
+        case RobotState::INIT: {
+            /* 
+            * Inicializar micros
+            * Iniciar tiempo de partida
+            */
+            elevator_.setState(0);
+            gripper_.setState(0);
+            drive_.setState(0);
+            drive_.update();
+            start_time_ = millis();    
+            break;
+        }
+        case RobotState::EXIT_START: {
+            /* 
+            * Avanzar por 2 segundos
+            */
+            drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+            unsigned long timeTraveled = millis();
+            while (millis()-timeTraveled < 2000){
+                drive_.acceptInput(0,100,0);
+            }
+            drive_.acceptInput(0,0,0);
+            //start_pos_ = ; //?idk se puede?
+            break;
+        }
+        case RobotState::GO_TREES: {
+            /* 
+            * La camara low comienza a detectar albercas
+            * Robot avanza
+            */
+            /* cam_low_->receiveData();
+            if (state_start_time_ == 0)
+                state_start_time_ = millis();
+
+            cam_low_->setState(0); // AVOID_OBSTACLES
+            drive_->acceptInput(0,100,0); */
+            break;
+        }
+        case RobotState::AVOID_LEFT_OBSTACLE: {//!checar, algo se ve muy sus
+            /* 
+            * si hay una alberca presente moverse a la izquierda para evitar obstaculo
+            * sino, avanzar hacia adelante
+            */
+            /* cam_low_->receiveData();
+
+            if (cam_low_->objectPresent()) {
+                drive_->moveLeft(100);
+            } else {
+                if (state_start_time_ == 0)
+                    state_start_time_ = millis();
+
+                drive_->acceptInput(0,100,0);
+            } */
+            break;
+        }
+        case RobotState::AVOID_RIGHT_OBSTACLE: { //!checar, algo se ve muy sus
+            /* 
+            * si hay una alberca presente moverse a la derecha para evitar obstaculo
+            * sino, avanzar hacia adelante
+            */
+            /* cam_low_->receiveData();
+
+            if (cam_low_->objectPresent()) {
+                    drive_->moveRight(100);
+            } else {
+                if (state_start_time_ == 0)
+                    state_start_time_ = millis();
+
+                drive_->acceptInput(0,100,0);
+            } */
+            break;
+        }
+        case RobotState::GO_LEFT_LINE: {
+            /*
+            * Buscar arboles
+            * moverse a la izquierda
+            */
+            /* cam_low_->setState(1); // FETCH_TREES
+            drive_->moveLeft(100);
+            current_tree_ = 1; */
+            break;
+        }
+        case RobotState::GO_RIGHT_LINE: {
+            /*
+            * Buscar arboles
+            * moverse a la derecha
+            */
+            /* cam_low_->setState(1); // FETCH_TREES
+            drive_->moveRight(100);
+            current_tree_ = 3; */
+            break;
+        }
+        case RobotState::PICK_MID_LEVEL: {
+            /*
+            * setear elevador a nivel mid
+            * centrarse en el arbol
+            * buscar pelota
+            */
+            elevator_.setState(2);
+            
+            centerWithObject();
+            for (current_beans_=0; current_beans_<mid_level_beans_; ++current_beans_) {
+                //pickBean();
+            }
+            break;
+        }
+        case RobotState::PICK_LOW_LEVEL: {
+            /*
+            * setear elevador a nivel mid
+            * centrarse en el arbol
+            * buscar pelota
+            */
+            elevator_.setState(1); //! si hay error, primero reiniciar en el cambio de estado
+
+            centerWithObject();
+
+            for (current_beans_=0; current_beans_<low_level_beans_; ++current_beans_) {
+                //pickBean();
+            }
+            break;
+        }
+        case RobotState::GO_STORAGE_MADURO: {//TODO
+            /*
+            *
+            */
+            /* cam_low_->receiveData();
+            
+            drive_->setState(0); // HEADING_LOCK
+            drive_->acceptHeadingInput(Rotation2D::fromDegrees(180)); */
+
+            break;
+        }
+        case RobotState::GO_STORAGE_SOBREMADURO: {//TODO
+            break;
+        }
+        case RobotState::DROP_BEANS: {
+            /*
+            * centrarse con el almacen
+            * girar 180°
+            * moverse hacia atras por 2 segs
+            * soltar pelotas
+            * moverse hacia adelante y girar 180 para prepararse a la siguiente caja
+            */
+            /* cam_low_->receiveData();
+            centerWithObject(); // centar con el almacen
+
+            drive_->setState(0); // HEADING_LOCK
+            drive_->acceptHeadingInput(Rotation2D::fromDegrees(180));
+            
+            state_start_time_ = millis();
+            while (millis()-state_start_time_ < 2000) {
+                drive_->moveBackward(100);
+            }
+            drive_->moveForward(0);
+
+            //almacen_->dropBalls(droped_SOBREMADURO) //Rego //0-MADURO, 1-SOBREMADURO
+            //revolver_->dropBalls() //Robo
+            delay(2000); //para asegurarse que toas las pelotas se hayan soltado
+
+            while (millis()-state_start_time_ < 2000) {
+                drive_->acceptInput(0,100,0);
+            }
+            drive_->moveForward(0);
+            drive_->setState(0); // HEADING_LOCK
+            drive_->acceptHeadingInput(Rotation2D::fromDegrees(180)); */
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void StateManager::update() { //!checar
+    elevator_.update();
+    drive_.update();
+    gripper_.update();
+    lower_sorter_.update();
+    upper_sorter_.update();
+    //almacen_->update();
+    //revolver->update();
+    //line_sensor_->update();
+    stateAction();
+}
+
