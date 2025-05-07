@@ -29,21 +29,6 @@ unsigned long StateManager::getTimeSpent() {
     return millis() - start_time_;
 }
 
-
-/*void StateManager::pickBean() {
-    bool allBeansPicked = false;
-            
-    cam_up_->receiveData();
-    int beanType = cam_up_->beanPresent();
-    //cam_up_
-    centerWithBean();
-    state_start_time_
-
-    acceptInput(0,100,0);
-
-    allBeansPicked = (cam_up_->beanPresent() == 0);
-}*/
-
 void StateManager::stateAction() {
     switch (state_) {
         case RobotState::INIT: {

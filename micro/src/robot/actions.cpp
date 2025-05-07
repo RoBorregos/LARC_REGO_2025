@@ -6,6 +6,27 @@
  */
 #include "actions.hpp"
 
+bool init(){
+    drive_.setState(0);
+    gripper_.setState(0);
+    elevator_.setState(0);
+    lower_sorter_.setState(1);
+    upper_sorter_.setState(1);
+    return true;
+}
+
+bool update(){
+    drive_.update();
+    gripper_.update();
+    elevator_.update();
+    lower_sorter_.update();
+    upper_sorter_.update();
+    cam_low_.update();
+
+    return true;
+
+}
+
 bool centerWithObject(double elapsed_time)
 {
     float offsetX = cam_low_.getOffset_X();
