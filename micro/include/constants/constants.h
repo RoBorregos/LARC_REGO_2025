@@ -56,6 +56,10 @@ namespace Constants {
         constexpr float kCenterPIDKd = 0.0f;
         constexpr float kCenterPIDOutputMin = -255.0f;
         constexpr float kCenterPIDOutputMax = 255.0f;
+
+        constexpr float kCenterOffsetX = 0.0f;
+        constexpr float kCenterOffsetY = 10.0f;
+
     }
 }
 

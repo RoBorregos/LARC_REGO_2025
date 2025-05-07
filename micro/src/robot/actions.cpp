@@ -16,39 +16,52 @@ LowerSorter lower_sorter_;
 UpperSorter upper_sorter_;
 
 bool centerWithObject(double elapsed_time)
-{ 
-    // !!! TODO Añadir que centrarse debe quedar a x cm
+{
     cam_low_.receiveData();
     float offsetX = cam_low_.getOffset_X();
-    float output = 0;
-
-    while (offsetX < -0.1f || offsetX > 0.1f) {
-        output = centerPID_.update(offsetX, 0); // Target is 0 (centered)
-        
-        if (output < 0) {
-            drive_.moveLeft(abs(output));
-        } else {
-            drive_.moveRight(abs(output));
-        }
-
-        delay(100); // pausa pequeña para dar tiempo al movimiento
-        cam_low_.receiveData();
-        offsetX = cam_low_.getOffset_X(); // Recalcula offset
+    float offsetY = cam_low_.getOffset_Y();
+    if (offsetX != 0)
+    {
+        double outputX = centerPID_.update(offsetX, VisionConstants::kCenterOffsetX);
+        double outputY = centerPID_.update(offsetY, VisionConstants::kCenterOffsetY);
+        drive_.acceptInput(-outputX, outputY, 0);
     }
-
-    drive_.moveForward(0); // Ya está centrado
-    return true;
+    else
+    {
+        drive_.acceptInput(0, 0, 0);
+        return true;
+    }
+    return false;
 }
 
 /**
  * @brief Recoger la pelota
  */
-bool pickBean(int level)
+bool pickBean(double elapsed_time, int level)
 {
     gripper_.setState(1);
     elevator_.setState(level);
-    centerWithObject(0);
-    return true;
+    if (centerWithObject(elapsed_time))
+    {
+        gripper_.setState(0);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief Sortear la pelota
+ */
+bool sortBean(double elapsed_time, int category)
+{
+    elevator_.setState(0);
+    upper_sorter_.setState(category);
+    
+    if (elapsed_time > 1000){
+        gripper_.setState(0);
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -73,11 +86,14 @@ bool exitStart(double elapsed_time)
  * @brief Buscar arboles
  */
 bool searchForTrees(double elapsed_time)
-{   
+{
     cam_low_.receiveData();
-    if (elapsed_time < 2000 || !cam_low_.objectPresent()) {
+    if (elapsed_time < 2000 || !cam_low_.objectPresent())
+    {
         drive_.acceptInput(0, 100, 0);
-    } else {
+    }
+    else
+    {
         drive_.acceptInput(0, 0, 0);
         return true;
     }
@@ -143,11 +159,14 @@ bool avoidRightObstacle()
 bool goLeftLine(double elapsed_time)
 {
     drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-    cam_low_.setState(1); 
+    cam_low_.setState(1);
     bool tree_found = cam_low_.objectPresent();
-    if (elapsed_time < 2000 && !tree_found) {
+    if (elapsed_time < 2000 && !tree_found)
+    {
         drive_.acceptInput(-100, 0, 0);
-    } else {
+    }
+    else
+    {
         drive_.acceptInput(0, 0, 0);
         return true;
     }
@@ -161,49 +180,20 @@ bool goLeftLine(double elapsed_time)
 bool goRightLine(double elapsed_time)
 {
     drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-    cam_low_.setState(1); 
+    cam_low_.setState(1);
     bool tree_found = cam_low_.objectPresent();
-    if (elapsed_time < 2000 && !tree_found) {
+    if (elapsed_time < 2000 && !tree_found)
+    {
         drive_.acceptInput(100, 0, 0);
-    } else {
+    }
+    else
+    {
         drive_.acceptInput(0, 0, 0);
         return true;
     }
     return false;
 }
 
-bool pickMidLevelBean()
-{
-    /*
-     * setear elevador a nivel mid
-     * centrarse en el arbol
-     * buscar pelota
-     */
-    elevator_.setState(2);
-
-    centerWithObject();
-    for (current_beans_ = 0; current_beans_ < mid_level_beans_; ++current_beans_)
-    {
-        // pickBean();
-    }
-}
-
-void pickLowLevelBean()
-{
-    /*
-     * setear elevador a nivel mid
-     * centrarse en el arbol
-     * buscar pelota
-     */
-    elevator_.setState(1); //! si hay error, primero reiniciar en el cambio de estado
-
-    centerWithObject();
-
-    for (current_beans_ = 0; current_beans_ < low_level_beans_; ++current_beans_)
-    {
-        // pickBean();
-    }
-}
 
 void goStorageMudo()
 {

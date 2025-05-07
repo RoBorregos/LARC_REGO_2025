@@ -28,6 +28,5 @@ bool goStorageOvergrown(double elapsed_time);
 bool dropBeans(double elapsed_time);
 bool goLeftLine(double elapsed_time);
 bool goRightLine(double elapsed_time);
-bool pickMidLevelBean();
-bool pickLowLevelBean();
+bool pickBean(double elapsed_time, int level);
 

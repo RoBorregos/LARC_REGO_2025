@@ -22,6 +22,10 @@ float CameraLower::getOffset_X() {
     return -0.15;
 }
 
+float CameraLower::getOffset_Y() {
+    return 0.0;
+}
+
 bool CameraLower::objectPresent() {
     return true;
 }

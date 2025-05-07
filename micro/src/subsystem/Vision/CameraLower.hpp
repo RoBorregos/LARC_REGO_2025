@@ -28,6 +28,8 @@ public:
 
     float getOffset_X();
 
+    float getOffset_Y();
+
     bool objectPresent();
 
     // TODO: Individual getters or a structure??
