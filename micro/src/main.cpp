@@ -36,7 +36,7 @@ void setup()
 
 void loop()
 {
-  unsigned long currentTime = millis();
+  /*unsigned long currentTime = millis();
   drive.update();
   gripper.update();
   intake.update();
@@ -48,5 +48,25 @@ void loop()
     gripper.setState(1);
     intake.setState(1);
 
+  }*/
+
+  /*for (int velocidad = 200; velocidad >= -200; velocidad--) {
+    if (velocidad > 0) {
+      drive.moveForward(velocidad);
+    } else if (velocidad < 0) {
+      drive.moveBackward(-velocidad); // usamos valor positivo para velocidad
+    } 
+    delay(10); // Delay para observar los cambios
+  }*/
+    /*for (int velocidad = -200; velocidad <= 200; velocidad++) {
+    if (velocidad < 0) {
+      drive.moveBackward(-velocidad); // usar valor positivo
+    } else if (velocidad > 0) {
+      drive.moveForward(velocidad);
+    }
+    delay(10); 
   }
+
+  while (true); */
+  drive.moveForward(100);
 }
