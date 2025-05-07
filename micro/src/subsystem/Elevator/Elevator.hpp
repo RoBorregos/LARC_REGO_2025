@@ -12,7 +12,7 @@
 #include <Arduino.h>
 #include "../systems/system.hpp"
 #include "constants/constants.h"
-
+#include "constants/pins.h"
 using namespace Constants;
 
 class Elevator : public System {
@@ -30,10 +30,7 @@ private:
     
 public:
     // Constructor with initialization list
-    Elevator(int leftStepPin, int leftDirPin, int rightStepPin, int rightDirPin);
-
-    // Method to initialize the elevator system
-    bool setup();
+    Elevator();
 
     // Method to move the elevator up by a specified distance in cm
     void moveUp(float distance);
