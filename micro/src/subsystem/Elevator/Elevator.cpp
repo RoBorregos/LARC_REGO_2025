@@ -76,5 +76,7 @@ void Elevator::update()
 
 void Elevator::setState(int state)
 {
+void Elevator::setState(int state)
+{
     elevator_state_ = static_cast<ElevatorState>(state);
 }

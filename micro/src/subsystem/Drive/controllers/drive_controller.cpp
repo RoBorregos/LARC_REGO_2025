@@ -30,7 +30,7 @@ ChassisSpeed DriveController::update(Rotation2D current_heading, bool field_rela
 }
 
 void DriveController::acceptInput(float vx, float vy, float omega) {
-    vx_ = vx;
-    vy_ = vy;
+    vx_ = -vx;
+    vy_ = -vy;
     omega_ = omega;
 }

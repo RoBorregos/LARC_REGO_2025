@@ -23,7 +23,7 @@ class Gripper : public System {
         void setState(int state) override;
     private:
         PWMServo servo;
-        void move(int angle);  // Make move public temporarily
+        void move(int angle);
         enum class GripperState {
             CLOSED = 0,
             OPEN = 1,

@@ -8,7 +8,7 @@
 
 #include "bno.hpp"
 
-BNO::BNO() : bno(55, 0x29, &Wire1), initialized(false) {
+BNO::BNO() : bno(55, 0x28, &Wire1), initialized(false) {
     begin();
 }
 
@@ -52,7 +52,7 @@ float BNO::wrapAngle(float angle) const {
 }
 
 float BNO::getYaw() const {
-    return -wrapAngle(event.orientation.x);
+    return wrapAngle(event.orientation.x);
 }
 
 float BNO::getRoll() const {

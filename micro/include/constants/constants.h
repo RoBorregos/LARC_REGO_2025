@@ -29,18 +29,41 @@ namespace Constants {
 
     namespace GripperConstants {
         constexpr int kOpenAngle = 60;
-        constexpr int kClosedAngle = 20;
+        constexpr int kClosedAngle = 5;
     }
 
-    namespace IntakeConstants {
-        constexpr int kIntakeSpeed = 200;
-        constexpr int kOuttakeSpeed = -200;
+    namespace UpperSorterConstants {
+        constexpr int kLeftAngle = 0;
+        constexpr int kCenterAngle = 90;
+        constexpr int kRightAngle = 180;
+    }
+
+    namespace LowerSorterConstants {
+        constexpr int kLeftAngle = 180;
+        constexpr int kCenterAngle = 90;
+        constexpr int kRightAngle = 0;
     }
 
     namespace DriveConstants {
         constexpr float kWheelDiameter = 0.0762; // in m
         constexpr float kWheelRadius = kWheelDiameter / 2.0; // in m
         constexpr float kWheelCircumference = 2 * M_PI * kWheelRadius; // in m
+
+        constexpr float kHeadingControllerKp = 365.0f;
+        constexpr float kHeadingControllerKi = 80.0f;
+        constexpr float kHeadingControllerKd = 0.0f;
+    }
+
+    namespace VisionConstants {
+        constexpr float kCenterPIDKp = 0.0f;
+        constexpr float kCenterPIDKi = 0.0f;
+        constexpr float kCenterPIDKd = 0.0f;
+        constexpr float kCenterPIDOutputMin = -255.0f;
+        constexpr float kCenterPIDOutputMax = 255.0f;
+
+        constexpr float kCenterOffsetX = 0.0f;
+        constexpr float kCenterOffsetY = 10.0f;
+
     }
 }
 

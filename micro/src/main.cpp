@@ -6,57 +6,24 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <dcmotor.hpp>
-#include "subsystem/Drive/drive.hpp"
-#include "constants/pins.h"
-#include "../lib/math/odometry.hpp"
-#include "subsystem/Gripper/Gripper.hpp"
-#include "subsystem/Intake/Intake.hpp"
-#include "constants/constants.h"
 #include "pose2d.hpp"
-/* Drive drive = Drive();
-Gripper gripper = Gripper();
-Intake intake = Intake(); */
+#include "robot/statemanager.hpp"
 
-DCMotor frontleft(Pins::kUpperMotors[0], Pins::kUpperMotors[1], Pins::kPwmPin[0], 
-               false, Pins::kEncoders[0], LOW, 1, DriveConstants::kWheelDiameter);
+const unsigned long UPDATE_INTERVAL = 20; // 20ms update interval
 
-// Timing variables
-unsigned long lastUpdateTime = 0;
-const unsigned long UPDATE_INTERVAL = 50; // 50ms update interval
+StateManager state_manager_;
 
 void setup()
 {
   Serial.begin(9600);
   Wire.begin();
-/* 
-  drive.setState(0);
-  gripper.setState(1);
-  intake.setState(1);
-  drive.acceptHeadingInput(Rotation2D(0)); */
+  state_manager_.setState(RobotState::INIT);
+
   interrupts();
 }
 
 void loop()
 {
-  unsigned long currentTime = millis();
-  //drive.update();
-  //gripper.update();
-  //intake.update();
-
-  frontleft.move(100);
-
-  double encoder_count = frontleft.getPositionRotations();
-  // Check if it's time to update
-  if (currentTime - lastUpdateTime >= UPDATE_INTERVAL)
-  {
-    Serial.println("Encoder Count: " + String(encoder_count));
-
-    lastUpdateTime = currentTime;
-  }
-
-  if (encoder_count >= 1)
-  {
-    frontleft.move(0);
-  }
+  state_manager_.update();
+  delay(UPDATE_INTERVAL);
 }
