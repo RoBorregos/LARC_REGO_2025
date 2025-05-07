@@ -7,6 +7,7 @@
 #include "subsystem/UpperSorter/UpperSorter.hpp"
 #include "subsystem/Vision/CameraLower.hpp"
 #include "subsystem/Vision/CameraUpper.hpp"
+#include "subsystem/LineSensor/LineSensor.h"
 #include "PID_v1.h"
 
 extern Drive drive_;
@@ -17,6 +18,7 @@ extern UpperSorter upper_sorter_;
 extern CameraLower cam_low_;
 extern CameraUpper cam_up_;
 extern PIDController centerPID_;
+extern LineSensor line_sensor_;
 
 bool centerWithObject(double elapsed_time);
 bool exitStart(double elapsed_time);
