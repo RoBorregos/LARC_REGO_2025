@@ -15,7 +15,7 @@ bool init(){
     return true;
 }
 
-bool update(){
+bool globalUpdate(){
     drive_.update();
     gripper_.update();
     elevator_.update();
@@ -110,6 +110,16 @@ bool sortBean(double elapsed_time, int category)
             state_start_time = 0;
             return false;
     }
+}
+
+bool initStart(){
+    drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+    drive_.setState(0);
+    gripper_.setState(0);
+    elevator_.setState(0);
+    lower_sorter_.setState(1);
+    upper_sorter_.setState(1);
+    return true;
 }
 
 /**
