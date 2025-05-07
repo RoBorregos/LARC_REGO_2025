@@ -91,15 +91,12 @@ void StateManager::stateAction() {
     }
 }
 
-void StateManager::update() { //!checar
+void StateManager::update() {
     elevator_.update();
     drive_.update();
     gripper_.update();
     lower_sorter_.update();
     upper_sorter_.update();
-    //almacen_->update();
-    //revolver->update();
-    //line_sensor_->update();
     stateAction();
 }
 
