@@ -6,12 +6,11 @@
  * @brief Cpp file of the Almacen class to control two servos.
  */
 
-#include "Arduino.h"
 #include "LineSensor.h"
 
-LineSensor::LineSensor(int leftPin, int rightPin) {
-  this->leftPin = leftPin;
-  this->rightPin = rightPin;
+LineSensor::LineSensor() {
+  this->leftPin = Pins::kLineSensorLeftPin;
+  this->rightPin = Pins::kLineSensorRightPin;
 }
 
 void LineSensor::begin() {

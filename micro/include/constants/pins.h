@@ -39,6 +39,9 @@ namespace Pins {
     constexpr uint8_t kStepperPin = 10;
     constexpr uint8_t kDirPin = 11;
     constexpr uint8_t kLimitPin = 12;
+
+    constexpr uint8_t kLineSensorLeftPin = 2;
+    constexpr uint8_t kLineSensorRightPin = 3;
 }
 
 #endif

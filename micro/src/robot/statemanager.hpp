@@ -24,17 +24,9 @@ private:
     Drive drive_;
     LowerSorter lower_sorter_;
     UpperSorter upper_sorter_;
-    //Almacen* almacen_; //Rego
-    //Revolver* revolver_; //Robo
-    //LineSensor* line_sensor_;
 
     RobotState state_;
 
-    //TODO: sacar las constantes hardcodeadas al hpp
-
-    //* esta bien sus esta maquina
-
-    // Constants for specific robot
     const int mid_level_beans_ = 4; // REGO //2 para ROBO
     const int low_level_beans_ = 3; // REGO 3 o 2 // 1 para ROBO
 
@@ -48,8 +40,8 @@ private:
 
 public:
     StateManager();
-    void stateAction(); // Method to run state
-    void stateTransition(); // Method to change state
+    void stateAction();
+    void stateTransition();
     void setState(RobotState state);
     RobotState getState();
     unsigned long getTimeSpent();
