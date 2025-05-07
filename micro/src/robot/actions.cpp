@@ -1,19 +1,10 @@
-#include "actions.hpp"
-
 /**
  * @file actions.cpp
  * @brief File for the actions of the robot
  * @author Juan Pablo Gutiérrz
  * @date 2025-05-06
  */
-
 #include "actions.hpp"
-
-Drive drive_;
-Elevator elevator_;
-Gripper gripper_;
-LowerSorter lower_sorter_;
-UpperSorter upper_sorter_;
 
 bool centerWithObject(double elapsed_time)
 {
