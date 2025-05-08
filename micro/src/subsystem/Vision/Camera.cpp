@@ -194,7 +194,7 @@ bool Camera::isObjectTooClose() {
 }
 
 // Upper camera methods
-BeanConstants::BeanType Camera::beanPresent() {
+BeanConstants::BeanType Camera::getBeanType() {
     return current_bean_type_;
 }
 

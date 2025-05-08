@@ -50,7 +50,7 @@ public:
     void setState(int state) override;
 
     // Upper camera methods
-    BeanConstants::BeanType beanPresent();
+    BeanConstants::BeanType getBeanType();
     float getBeanOffset_X();
     float getBeanOffset_Y();
 
