@@ -45,8 +45,11 @@ bool centerWithObject(double elapsed_time) //Center in X offset
 bool alignWithObject(double elapsed_time, float desired_distance=10.0) { //Acomodar robot to a certain distance //! incomplete method
     float distance = camera_.getObjectDistance();
     if (distance > desired_distance) {
-        double outputY = centerPID_.update(100, 112); //TODO:
+        drive_.acceptInput(0, 100, 0);
+        return false;
     }
+    drive_.acceptInput(0, 0, 0);
+    return true;
 }
 
 /**
@@ -65,21 +68,24 @@ bool pickBean(double elapsed_time, int level)
 
     switch (state) {
         case 0: // Set gripper and elevator
+            Serial.println("Setting gripper and elevator");
             gripper_.setState(1);
             elevator_.setState(level);
             state = 1;
             return false;
 
         case 1: // Center and pick
-            if (centerWithObject(elapsed_time)) {
-                state = 2;
+            /* if (centerWithObject(elapsed_time)) {
                 state_start_time = elapsed_time;
-            }
+            } */
+            state = 2;
+            Serial.println("Center and pick");
             return false;
         
         case 2:
+            Serial.println("Picking bean"); 
             if(elapsed_time - state_start_time < 750) {
-                drive_.acceptInput(0,100,0);
+                //drive_.acceptInput(0,100,0);
             } else {
                 drive_.acceptInput(0, 0, 0);
                 gripper_.setState(0);
@@ -89,8 +95,10 @@ bool pickBean(double elapsed_time, int level)
             return false;
 
         case 3:
+            Serial.println("Dropping bean");
             if(elapsed_time - state_start_time < 1000) {
-                drive_.acceptInput(0,-100,0);
+                //drive_.acceptInput(0,-100,0);
+                upper_sorter_.setState(1);
             } else {
                 drive_.acceptInput(0, 0, 0);
                 state = 4;
@@ -99,10 +107,9 @@ bool pickBean(double elapsed_time, int level)
             return false;
         
         case 4:
-            upper_sorter_.setState(1);
             if(elapsed_time-state_start_time < 1500) {
                 elevator_.setState(1);
-            } else if (elapsed_time - state_start_time < 2000) {
+            } else if (elapsed_time - state_start_time < 2500) {
                 gripper_.setState(1);
             } else {
                 upper_sorter_.setState(beanType*2);
@@ -390,22 +397,22 @@ bool goStorageZone(double elapsed_time) {
     }
 }
 
-void goStorageMaduro()
+bool goStorageMaduro(double elapsed_time)
 {
-    static int state = 0;
     static double state_start_time = 0;
 
     if (state_start_time == 0) {
         state_start_time = elapsed_time;
     }
 
-    camera_.setState(2); // FETCH_STOREHOUSE_MADURO
-
-
-    drive_.setState(0);
-    drive_.acceptHeadingInput(Rotation2D::fromDegrees(180));
-
-    camera_.setState();
+    if (elapsed_time - state_start_time < 2000) {
+        drive_.acceptInput(0, 100, 0);
+        return false;
+    }
+    
+    drive_.acceptInput(0, 0, 0);
+    camera_.setState(0);  // Set camera to default state
+    return true;
 }
 
 void goStoreGrown()
