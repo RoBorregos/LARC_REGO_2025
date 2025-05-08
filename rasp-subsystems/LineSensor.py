@@ -1,16 +1,27 @@
-import gpiod
+import RPi.GPIO as GPIO
 import time
 
 class LineSensor:
-    def __init__(self, left_pin, right_pin, chip="gpiochip4"):
-        self.chip = gpiod.Chip(chip)
-        self.left_line = self.chip.get_line(left_pin)
-        self.right_line = self.chip.get_line(right_pin)
-        self.left_line.request(consumer="LineSensor", type=gpiod.LINE_REQ_DIR_IN)
-        self.right_line.request(consumer="LineSensor", type=gpiod.LINE_REQ_DIR_IN)
+    def __init__(self, left_pin, right_pin):
+        self.left_pin = left_pin
+        self.right_pin = right_pin
+
+        # Usamos el modo BCM (por número de GPIO)
+        GPIO.setmode(GPIO.BCM)
+
+        # Desactiva advertencias por reutilización de pines
+        GPIO.setwarnings(False)
+
+        # Configura los pines como entradas
+        GPIO.setup(self.left_pin, GPIO.IN)
+        GPIO.setup(self.right_pin, GPIO.IN)
 
     def left_detected(self):
-        return self.left_line.get_value() == 1
+        value = GPIO.input(self.left_pin)
+        #print("Left detected =", value)
+        return value == GPIO.HIGH
 
     def right_detected(self):
-        return self.right_line.get_value() == 1
+        value = GPIO.input(self.right_pin)
+        #print("Right detected =", value)
+        return value == GPIO.HIGH
