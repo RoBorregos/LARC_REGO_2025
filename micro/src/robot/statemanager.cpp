@@ -63,11 +63,19 @@ void StateManager::stateTransition() {
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
-            setState(RobotState::GO_STORAGE_MADURO);
+            current_beans_++;
+            if (current_beans_>=mid_level_beans_) {
+                setState(RobotState::GO_STORAGE_MADURO);
+                current_beans_ = 0;
+            }
             break;
         }
         case RobotState::PICK_LOW_LEVEL: {
-            setState(RobotState::GO_STORAGE_SOBREMADURO);
+            current_beans_++;
+            if (current_beans_>=low_level_beans_) {
+                setState(RobotState::GO_STORAGE_SOBREMADURO);
+                current_beans_ = 0;
+            }
             break;
         }
         case RobotState::GO_STORAGE_MADURO: {
