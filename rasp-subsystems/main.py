@@ -2,6 +2,9 @@ from Elevator.Elevator import Elevator
 from LineSensor.LineSensor import LineSensor
 from vision.CameraLower import CameraLower
 from vision.CameraUpper import CameraUpper
+from vision.BlueObstacleDetector import BlueObstacleDetector
+from vision.StorageDetector import StorageDetector
+from vision.TreeDetector import TreeDetector
 
 import time
 import serial
