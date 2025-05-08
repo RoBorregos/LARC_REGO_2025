@@ -4,7 +4,7 @@ import numpy as np
 class BlueObstacleDetector:
     def __init__(self):
         # HSV bounds for blue detection
-        self.color = ([92, 52, 66], [122, 204, 255])
+        self.color = ([21, 0, 0], [151, 255, 255])
 
         # Real-world distance (cm) and camera focal length (px)
         self.VERTICAL_DISTANCE_CM = 9.0
