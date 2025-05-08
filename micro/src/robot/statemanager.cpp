@@ -55,7 +55,12 @@ void StateManager::stateTransition() {
         }
         case RobotState::SEARCH_TREES: {
             current_tree_++;
-            setState(RobotState::PICK_MID_LEVEL);
+            if (current_tree_ == 3) {
+                direction_ = true;
+                setState(RobotState::PICK_LOW_LEVEL);
+            } else {
+                setState(RobotState::PICK_MID_LEVEL);
+            }
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
@@ -65,7 +70,7 @@ void StateManager::stateTransition() {
                     setState(RobotState::PICK_LOW_LEVEL);
                 }
                 else{
-                    setState(RobotState::GO_LEFT_LINE);
+                    setState(direction_ ? RobotState::GO_RIGHT_LINE : RobotState::GO_LEFT_LINE);
                 }
                 current_beans_ = 0;
             }
@@ -129,7 +134,7 @@ void StateManager::update() {
             break;
         }
         case RobotState::SEARCH_TREES: {
-            action_completed = searchForTrees(getTimeSpent());
+            action_completed = searchForTrees(getTimeSpent(), direction_);
             break;
         }
         case RobotState::PICK_MID_LEVEL: {

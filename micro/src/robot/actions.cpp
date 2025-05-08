@@ -285,7 +285,7 @@ bool goRightLimit(double elapsed_time){
 /**
  * @brief Buscar arboles
  */
-bool searchForTrees(double elapsed_time)
+bool searchForTrees(double elapsed_time, bool direction)
 {
     static int state = 0;
     static double state_start_time = 0;
@@ -299,7 +299,7 @@ bool searchForTrees(double elapsed_time)
     switch (state) {
         case 0: // Search
             if (elapsed_time - state_start_time < 2000 || !camera_.objectPresent()) {
-                drive_.acceptInput(0, 100, 0);
+                drive_.acceptInput(direction ? 100 : -100, 100, 0);
                 return false;
             }
             state = 1;

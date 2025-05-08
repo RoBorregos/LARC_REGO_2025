@@ -24,7 +24,7 @@ bool exitStart(double elapsed_time);
 bool goTreeZone(double elapsed_time);
 bool goLeftLimit(double elapsed_time);
 bool goRightLimit(double elapsed_time);
-bool searchForTrees(double elapsed_time);
+bool searchForTrees(double elapsed_time, bool direction);
 bool goStorageMudo(double elapsed_time);
 bool goStoreGrown(double elapsed_time);
 bool goStorageOvergrown(double elapsed_time);
