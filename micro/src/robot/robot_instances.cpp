@@ -9,8 +9,7 @@ Elevator elevator_;
 Gripper gripper_;
 LowerSorter lower_sorter_;
 UpperSorter upper_sorter_;
-CameraLower cam_low_;
-CameraUpper cam_up_;
+Camera camera_;
 PIDController centerPID_(VisionConstants::kCenterPIDKp, VisionConstants::kCenterPIDKi, VisionConstants::kCenterPIDKd, 
                         VisionConstants::kCenterPIDOutputMin, VisionConstants::kCenterPIDOutputMax);
 LineSensor line_sensor_; 

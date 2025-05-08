@@ -5,9 +5,8 @@
 #include "../subsystem/Gripper/Gripper.hpp"
 #include "../subsystem/LowerSorter/LowerSorter.hpp"
 #include "../subsystem/UpperSorter/UpperSorter.hpp"
-#include "../subsystem/Vision/CameraLower.hpp"
-#include "../subsystem/Vision/CameraUpper.hpp"
 #include "../subsystem/LineSensor/LineSensor.h"
+#include "../subsystem/Vision/Camera.hpp"
 #include "PID_v1.h"
 
 extern Drive drive_;
@@ -15,10 +14,9 @@ extern Elevator elevator_;
 extern Gripper gripper_;
 extern LowerSorter lower_sorter_;
 extern UpperSorter upper_sorter_;
-extern CameraLower cam_low_;
-extern CameraUpper cam_up_;
 extern PIDController centerPID_;
 extern LineSensor line_sensor_;
+extern Camera camera_;
 
 bool centerWithObject(double elapsed_time);
 bool initStart();

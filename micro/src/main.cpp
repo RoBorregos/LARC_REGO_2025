@@ -9,9 +9,11 @@
 #include "pose2d.hpp"
 #include "robot/statemanager.hpp"
 #include "subsystem/Drive/Drive.hpp"
+#include "subsystem/LineSensor/LineSensor.h"
 const unsigned long UPDATE_INTERVAL = 20;
 
 extern Drive drive_;
+extern LineSensor line_sensor_;
 void setup()
 {
   Serial.begin(9600);
@@ -27,7 +29,12 @@ void loop()
 {
   drive_.update();
 
-  Pose2D pose = drive_.getPose();
-  Serial.println("Theta: " + String(pose.getTheta().getDegrees()));
+  if (line_sensor_.leftDetected()) {
+    Serial.println("Left detected");
+  }
+  if (line_sensor_.rightDetected()) {
+    Serial.println("Right detected");
+  }
+
   delay(UPDATE_INTERVAL);
 }

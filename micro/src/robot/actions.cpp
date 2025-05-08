@@ -21,7 +21,7 @@ bool globalUpdate(){
     elevator_.update();
     lower_sorter_.update();
     upper_sorter_.update();
-    cam_low_.update();
+    camera_.update();
 
     return true;
 
@@ -29,8 +29,8 @@ bool globalUpdate(){
 
 bool centerWithObject(double elapsed_time)
 {
-    float offsetX = cam_low_.getOffset_X();
-    float offsetY = cam_low_.getOffset_Y();
+    float offsetX = camera_.getOffset_X();
+    float offsetY = camera_.getOffset_Y();
     if (offsetX != 0)
     {
         double outputX = centerPID_.update(offsetX, VisionConstants::kCenterOffsetX);
@@ -171,7 +171,7 @@ bool searchForTrees(double elapsed_time)
 
     switch (state) {
         case 0: // Search
-            if (elapsed_time - state_start_time < 2000 || !cam_low_.objectPresent()) {
+            if (elapsed_time - state_start_time < 2000 || !camera_.objectPresent()) {
                 drive_.acceptInput(0, 100, 0);
                 return false;
             }
@@ -259,8 +259,8 @@ bool goLeftLine(double elapsed_time)
     switch (state) {
         case 0: // Set up and move
             drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-            cam_low_.setState(1);
-            if (elapsed_time - state_start_time < 2000 && !cam_low_.objectPresent()) {
+            camera_.setState(1);
+            if (elapsed_time - state_start_time < 2000 && !camera_.objectPresent()) {
                 drive_.acceptInput(-100, 0, 0);
                 return false;
             }
@@ -296,8 +296,8 @@ bool goRightLine(double elapsed_time)
     switch (state) {
         case 0: // Set up and move
             drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-            cam_low_.setState(1);
-            if (elapsed_time - state_start_time < 2000 && !cam_low_.objectPresent()) {
+            camera_.setState(1);
+            if (elapsed_time - state_start_time < 2000 && !camera_.objectPresent()) {
                 drive_.acceptInput(100, 0, 0);
                 return false;
             }
