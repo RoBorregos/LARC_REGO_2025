@@ -1,4 +1,3 @@
-from Elevator.Elevator import Elevator
 from LineSensor.LineSensor import LineSensor
 from vision.CameraLower import CameraLower
 from vision.CameraUpper import CameraUpper
@@ -13,18 +12,13 @@ def main():
     # Line Sensor Setup
     line_sensor = LineSensor(left_pin=4, right_pin=25)
 
-    # Elevator Setup
-    elevator = Elevator()
-    elevator.move(100)
-
-    
     # Camera Setup
-    cam_up = CameraUpper(port=port, camera_index=0)
-    cam_low = CameraLower(port=port, camera_index=1)
-
     port = "/dev/ttyACM0"
     baudrate = 9600
     timeout = 1
+
+    cam_up = CameraUpper(port=port, camera_index=0)
+    cam_low = CameraLower(port=port, camera_index=2)
 
     try:
         ser = serial.Serial(port, baudrate=baudrate, timeout=timeout)
