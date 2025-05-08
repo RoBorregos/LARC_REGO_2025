@@ -4,8 +4,8 @@ import numpy as np
 class StorageDetector:
     def __init__(self):
         # Default HSV color bounds for red and blue detection
-        self.red_color = ([0, 100, 100], [10, 255, 255])
-        self.blue_color = ([92, 52, 66], [122, 204, 255])
+        self.red_color = ([154, 92, 94], [179, 255, 255])
+        self.blue_color = ([0, 0, 0], [179, 92, 255])
         
         # Real-world distance (cm) and camera focal length (px)
         self.VERTICAL_DISTANCE_CM = 9.0
