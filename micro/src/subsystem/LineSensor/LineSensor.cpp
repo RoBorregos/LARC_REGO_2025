@@ -8,7 +8,7 @@
 
 #include "LineSensor.h"
 
-LineSensor::LineSensor() {
+/*LineSensor::LineSensor() {
   this->leftPin = Pins::kLineSensorLeftPin;
   this->rightPin = Pins::kLineSensorRightPin;
 }
@@ -24,5 +24,41 @@ bool LineSensor::leftDetected() {
 
 bool LineSensor::rightDetected() {
   return digitalRead(rightPin) == HIGH;
+}*/
+
+LineSensor::LineSensor() {}
+
+void LineSensor::update() {
+  if (!Serial.available()) return;
+
+  String received = Serial.readStringUntil('\n');
+  received.trim();
+
+  if (received.startsWith("Left:")) {
+    String value = received.substring(5);
+    value.trim();
+    if (value == "YES") {
+      left_detected_ = true;
+      right_detected_ = false;
+    } else {
+      left_detected_ = false;
+    }
+  } else if (received.startsWith("Right:")) {
+    String value = received.substring(6);
+    value.trim();
+    if (value == "YES") {
+      right_detected_ = true;
+      left_detected_ = false;
+    } else {
+      right_detected_ = false;
+    }
+  }
+}
+
+bool LineSensor::leftDetected() {
+  return left_detected_;
+}
+bool LineSensor::rightDetected() {
+  return right_detected_;
 }
 
