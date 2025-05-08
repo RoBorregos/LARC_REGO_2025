@@ -15,6 +15,8 @@ def main():
 
     # Elevator Setup
     elevator = Elevator()
+    elevator.move(100)
+
     
     # Camera Setup
     cam_up = CameraUpper(port=port, camera_index=0)
@@ -30,7 +32,6 @@ def main():
     except serial.SerialException as e:
         print(f"[ERROR] Serial connection failed: {e}")
         ser = None
-
     while True:
         # Run vision systems
         cam_up.run()

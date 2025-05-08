@@ -1,9 +1,9 @@
 import serial
 import time
 from enum import Enum, auto
-from BlueObstacleDetector import BlueObstacleDetector
-from TreeDetector import TreeDetector
-from StorageDetector import StorageDetector
+from .BlueObstacleDetector import BlueObstacleDetector
+from .TreeDetector import TreeDetector
+from .StorageDetector import StorageDetector
 import cv2
 
 class CameraState(Enum):
