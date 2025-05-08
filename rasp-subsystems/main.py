@@ -1,67 +1,83 @@
-from LineSensor import LineSensor
-from Elevator import Elevator
-import serial
+from Elevator.Elevator import Elevator
+from LineSensor.LineSensor import LineSensor
+from vision.CameraLower import CameraLower
+from vision.CameraUpper import CameraUpper
+
 import time
+import serial
 
 def main():
+    # Line Sensor Setup
     line_sensor = LineSensor(left_pin=4, right_pin=25)
+
+    # Elevator Setup
     elevator = Elevator()
+    
+    # Camera Setup
+    cam_up = CameraUpper(port=port, camera_index=0)
+    cam_low = CameraLower(port=port, camera_index=1)
+
     port = "/dev/ttyACM0"
-    baudrate=9600
-    timeout=1
+    baudrate = 9600
+    timeout = 1
 
     try:
-        serial = serial.Serial(port, baudrate=baudrate, timeout=timeout)
+        ser = serial.Serial(port, baudrate=baudrate, timeout=timeout)
         print(f"[SERIAL] Connected to {port} at {baudrate} baud.")
     except serial.SerialException as e:
         print(f"[ERROR] Serial connection failed: {e}")
-        serial = None
+        ser = None
 
     while True:
-        if serial and serial.is_open:
-            if serial.in_waiting:
-                command = serial.readline().decode().strip()
-                
-                # Handle elevator commands
+        # Run vision systems
+        cam_up.run()
+        cam_low.run()
+        cam_low.receive_state()
+
+        # Serial commands for elevator
+        if ser and ser.is_open:
+            if ser.in_waiting:
+                command = ser.readline().decode().strip()
+
                 if command.startswith("SET_TARGET:"):
                     try:
                         position = int(command.split(":")[1])
                         elevator.set_target_position(position)
-                        serial.write(b"OK\n")
+                        ser.write(b"OK\n")
                     except:
-                        serial.write(b"ERROR\n")
-                
+                        ser.write(b"ERROR\n")
+
                 elif command.startswith("SET_POSITION:"):
                     try:
                         position = int(command.split(":")[1])
-                        elevator.encoder_position = position  # Reset current position
-                        elevator.set_target_position(position)  # Also set as target
-                        serial.write(b"OK\n")
+                        elevator.encoder_position = position
+                        elevator.set_target_position(position)
+                        ser.write(b"OK\n")
                     except:
-                        serial.write(b"ERROR\n")
-                
+                        ser.write(b"ERROR\n")
+
                 elif command == "GET_POS":
                     pos = elevator.get_position()
-                    serial.write(f"{pos}\n".encode())
-                
-                # Update elevator position control
+                    ser.write(f"{pos}\n".encode())
+
                 elevator.update_position_control()
 
-        # Line sensor status
-        if(line_sensor.left_detected):
-            msg = "Right: YES"
+        # Line Sensor Messages
+        msg = ""
+        if line_sensor.left_detected:
+            msg += "Left: YES "
         else:
-            msg = "Right: NO"
-        
-        if(line_sensor.right_detected):
-            msg = "Left: YES"
-        else:
-            msg = "Left: NO"
+            msg += "Left: NO "
 
-        if serial and serial.is_open:
-            serial.write((msg + "\n").encode())
-        
-        time.sleep(0.01)  # Small delay to prevent CPU overload
+        if line_sensor.right_detected:
+            msg += "Right: YES"
+        else:
+            msg += "Right: NO"
+
+        if ser and ser.is_open:
+            ser.write((msg + "\n").encode())
+
+        time.sleep(0.1)  # Adjusted to reduce CPU load and allow camera time
 
 if __name__ == "__main__":
     main()
