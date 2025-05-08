@@ -204,7 +204,7 @@ bool goTreeZone(double elapsed_time) { //! incomplete function, obstacle detecti
     switch (state) {
         case 0: // Advance
             if (elapsed_time - state_start_time < 5000) {
-                drive_.acceptInput(-100, 0, 0);
+                drive_.acceptInput(0, 100, 0);
                 return false;
             }
         case 1: // Stop

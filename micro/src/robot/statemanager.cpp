@@ -46,26 +46,27 @@ void StateManager::stateTransition() {
             break;
         }
         case RobotState::GO_LEFT_LINE: {
-            setState(RobotState::PICK_MID_LEVEL);
+            setState(RobotState::SEARCH_TREES);
             break;
         }
         case RobotState::GO_RIGHT_LINE: {
-            setState(RobotState::PICK_LOW_LEVEL);
+            setState(RobotState::SEARCH_TREES);
             break;
         }
         case RobotState::SEARCH_TREES: {
-            // Transition based on which tree was found
-            if (camera_.objectPresent()) {
-                setState(RobotState::GO_LEFT_LINE);
-            } else {
-                setState(RobotState::GO_RIGHT_LINE);
-            }
+            current_tree_++;
+            setState(RobotState::PICK_MID_LEVEL);
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
             current_beans_++;
             if (current_beans_>=mid_level_beans_) {
-                setState(RobotState::GO_STORAGE_MADURO);
+                if (current_tree_==2){
+                    setState(RobotState::PICK_LOW_LEVEL);
+                }
+                else{
+                    setState(RobotState::GO_LEFT_LINE);
+                }
                 current_beans_ = 0;
             }
             break;
