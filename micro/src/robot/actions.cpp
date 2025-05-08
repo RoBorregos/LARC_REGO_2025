@@ -52,15 +52,12 @@ bool alignWithObject(double elapsed_time, float desired_distance=10.0) { //Acomo
     return true;
 }
 
-/**
- * @brief Recoger la pelota
- */
 bool pickBean(double elapsed_time, int level)
 {
     static int state = 0;
     static double state_start_time = 0;
 
-    bool beanType = false; // false = MADURO, true = SOBREMADURO
+    bool beanType = true; // false = MADURO, true = SOBREMADURO
 
     if (state_start_time == 0) {
         state_start_time = elapsed_time;
@@ -68,22 +65,25 @@ bool pickBean(double elapsed_time, int level)
 
     switch (state) {
         case 0: // Set gripper and elevator
-            //Serial.println("Setting gripper and elevator");
             gripper_.setState(1);
             elevator_.setState(level);
             state = 1;
             return false;
 
         case 1: // Center and pick
-            /* if (centerWithObject(elapsed_time)) {
-                state_start_time = elapsed_time;
+            /* if (camera_.getBeanType() != BeanConstants::NONE) {
+                BeanConstants::BeanType type = camera_.getBeanType();
+                beanType = (type == BeanConstants::SOBREMADURO);  // false = MADURO, true = SOBREMADURO
+                if (centerWithObject(elapsed_time)) {
+                    state = 2;
+                    state_start_time = elapsed_time;
+                }
+            } else {
             } */
-            state = 2;
-            //Serial.println("Center and pick");
+                state = 2;
             return false;
         
         case 2:
-            //Serial.println("Picking bean"); 
             if(elapsed_time - state_start_time < 750) {
                 //drive_.acceptInput(0,100,0);
             } else {
@@ -95,7 +95,6 @@ bool pickBean(double elapsed_time, int level)
             return false;
 
         case 3:
-            //Serial.println("Dropping bean");
             if(elapsed_time - state_start_time < 1000) {
                 //drive_.acceptInput(0,-100,0);
                 upper_sorter_.setState(1);
