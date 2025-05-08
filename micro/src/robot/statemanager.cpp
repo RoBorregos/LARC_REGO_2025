@@ -34,52 +34,49 @@ void StateManager::stateTransition() {
             break;
         }
         case RobotState::GO_TREES: {
-            setState(RobotState::SEARCH_TREES);
+            setState(RobotState::GO_LEFT_LINE);
             break;
         }
         case RobotState::AVOID_LEFT_OBSTACLE: {
-            setState(RobotState::GO_TREES);
+            //setState(RobotState::GO_TREES);
             break;
         }
         case RobotState::AVOID_RIGHT_OBSTACLE: {
-            setState(RobotState::GO_TREES);
+            //setState(RobotState::GO_TREES);
             break;
         }
         case RobotState::GO_LEFT_LINE: {
             setState(RobotState::SEARCH_TREES);
             break;
         }
-        case RobotState::GO_RIGHT_LINE: {
-            setState(RobotState::SEARCH_TREES);
-            break;
-        }
         case RobotState::SEARCH_TREES: {
-            current_tree_++;
-            if (current_tree_ == 3) {
-                direction_ = true;
-                setState(RobotState::PICK_LOW_LEVEL);
-            } else {
-                setState(RobotState::PICK_MID_LEVEL);
-            }
+            direction_ ? ++current_tree_ : --current_tree_;
+            setState(RobotState::PICK_MID_LEVEL);
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
+            direction_ = true; //no quiero fallos
             current_beans_++;
             if (current_beans_>=mid_level_beans_) {
-                if (current_tree_==2){
+                if (current_tree_ == 3) {
                     setState(RobotState::PICK_LOW_LEVEL);
                 }
                 else{
-                    setState(direction_ ? RobotState::GO_RIGHT_LINE : RobotState::GO_LEFT_LINE);
+                    setState(RobotState::SEARCH_TREES);
                 }
                 current_beans_ = 0;
             }
             break;
         }
         case RobotState::PICK_LOW_LEVEL: {
+            direction_ = false; //no quiero fallos
             current_beans_++;
             if (current_beans_>=low_level_beans_) {
-                setState(RobotState::GO_STORAGE_SOBREMADURO);
+                if (current_tree_ == 1 || current_tree_ == 6) {
+                    setState(RobotState::GO_STORAGE_MADURO);
+                } else {
+                    setState(RobotState::SEARCH_TREES);
+                }
                 current_beans_ = 0;
             }
             break;
@@ -93,7 +90,8 @@ void StateManager::stateTransition() {
             break;
         }
         case RobotState::DROP_BEANS: {
-            setState(RobotState::SEARCH_TREES);
+            if(!droped_SOBREMADURO)
+                setState(RobotState::GO_STORAGE_SOBREMADURO);
             break;
         }
         default:
@@ -119,18 +117,14 @@ void StateManager::update() {
             action_completed = goTreeZone(getTimeSpent());
             break;
         }
-        case RobotState::AVOID_LEFT_OBSTACLE: {
+        case RobotState::AVOID_LEFT_OBSTACLE: { //TODO:
             break;
         }
-        case RobotState::AVOID_RIGHT_OBSTACLE: {
+        case RobotState::AVOID_RIGHT_OBSTACLE: { //TODO:
             break;
         }
         case RobotState::GO_LEFT_LINE: {
             action_completed = goLeftLimit(getTimeSpent());
-            break;
-        }
-        case RobotState::GO_RIGHT_LINE: {
-            action_completed = goRightLine(getTimeSpent());
             break;
         }
         case RobotState::SEARCH_TREES: {
@@ -145,13 +139,24 @@ void StateManager::update() {
             action_completed = pickBean(getTimeSpent(), 1);
             break;
         }
+        case RobotState::GO_STORAGES: {
+            action_completed = goStorageZone(getTimeSpent());
+            break;
+        }
         case RobotState::GO_STORAGE_MADURO: {
+            action_completed = goStorageMaduro(getTimeSpent());
+            break;
+        }
+        case RobotState::GO_RIGHT_LINE:{
+            goRightLimit(getTimeSpent());
             break;
         }
         case RobotState::GO_STORAGE_SOBREMADURO: {
+            
             break;
         }
         case RobotState::DROP_BEANS: {
+            action_completed = dropBeans(getTimeSpent(), droped_SOBREMADURO*2);
             break;
         }
         default:

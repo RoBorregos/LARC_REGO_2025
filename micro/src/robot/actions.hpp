@@ -19,18 +19,25 @@ extern LineSensor line_sensor_;
 extern Camera camera_;
 
 bool centerWithObject(double elapsed_time);
+bool alignWithObject(double elapsed_time, float desired_distance);
+
 bool initStart();
 bool exitStart(double elapsed_time);
+
 bool goTreeZone(double elapsed_time);
+
 bool goLeftLimit(double elapsed_time);
 bool goRightLimit(double elapsed_time);
+
 bool searchForTrees(double elapsed_time, bool direction);
-bool goStorageMudo(double elapsed_time);
-bool goStoreGrown(double elapsed_time);
-bool goStorageOvergrown(double elapsed_time);
-bool dropBeans(double elapsed_time);
-bool goLeftLine(double elapsed_time);
-bool goRightLine(double elapsed_time);
+
+bool goStorageMaduro(double elapsed_time);
+bool goStorageSobreMaduro(double elapsed_time);
+
+bool goStorageZone(double elapsed_time);
+
+bool dropBeans(double elapsed_time, int container_type);
+
 bool pickBean(double elapsed_time, int level);
-bool dropBeans(double elapsed_time);
+
 bool globalUpdate();

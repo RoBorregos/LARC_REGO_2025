@@ -22,6 +22,7 @@ enum class RobotState {
     PICK_MID_LEVEL,
     PICK_LOW_LEVEL,
     MOVE_NEXT_TREE,
+    GO_STORAGES,
     GO_STORAGE_MADURO,
     GO_STORAGE_SOBREMADURO, //Robo no tendrá esto
     DROP_BEANS

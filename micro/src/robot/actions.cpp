@@ -27,19 +27,26 @@ bool globalUpdate(){
 
 }
 
-bool centerWithObject(double elapsed_time)
+bool centerWithObject(double elapsed_time) //Center in X offset
 {
     float offsetX = camera_.getOffset_X();
-    float offsetY = camera_.getOffset_Y();
-    if (offsetX != 0)
+    //float offsetY = camera_.getOffset_Y();
+    if (offsetX > abs(0.1))
     {
         double outputX = centerPID_.update(offsetX, VisionConstants::kCenterOffsetX);
-        double outputY = centerPID_.update(offsetY, VisionConstants::kCenterOffsetY);
-        drive_.acceptInput(-outputX, outputY, 0);
+        //double outputY = centerPID_.update(offsetY, VisionConstants::kCenterOffsetY);
+        drive_.acceptInput(-outputX, 0, 0);
         return false;
     }
     drive_.acceptInput(0, 0, 0);
     return true;
+}
+
+bool alignWithObject(double elapsed_time, float desired_distance=10.0) { //Acomodar robot to a certain distance //! incomplete method
+    float distance = camera_.getObjectDistance();
+    if (distance > desired_distance) {
+        double outputY = centerPID_.update(100, 112); //TODO:
+    }
 }
 
 /**
@@ -298,8 +305,8 @@ bool searchForTrees(double elapsed_time, bool direction)
 
     switch (state) {
         case 0: // Search
-            if (elapsed_time - state_start_time < 2000 || !camera_.objectPresent()) {
-                drive_.acceptInput(direction ? 100 : -100, 100, 0);
+            if (elapsed_time - state_start_time < 2000 && !camera_.objectPresent()) {
+                drive_.acceptInput(direction ? 100 : -100, 0, 0);
                 return false;
             }
             state = 1;
@@ -318,21 +325,7 @@ bool searchForTrees(double elapsed_time, bool direction)
     }
 }
 
-/**
- * @brief Moverse a los arboles
- */
-bool goToTrees(double elapsed_time)
-{
-    /* cam_low_->receiveData();
-    if (state_start_time_ == 0)
-        state_start_time_ = millis();
-
-    cam_low_->setState(0); // AVOID_OBSTACLES
-    drive_->acceptInput(0,100,0); */
-    return false;
-}
-
-bool avoidLeftObstacle()
+bool avoidLeftObstacle() //TODO:
 {
     /*
      * si hay una alberca presente moverse a la izquierda para evitar obstaculo
@@ -351,7 +344,7 @@ bool avoidLeftObstacle()
     return false;
 }
 
-bool avoidRightObstacle()
+bool avoidRightObstacle() //TODO:
 {
     /*
      * si hay una alberca presente moverse a la derecha para evitar obstaculo
@@ -370,12 +363,10 @@ bool avoidRightObstacle()
     return false;
 }
 
-/**
- * @brief Moverse al arbol de la izquierda
- * TODO: INCOPORRAR SENSORES DE LÍNEA PARA DETECTAR SI NOS VAMOS A SALIR DE LA PISTA
- */
-bool goLeftLine(double elapsed_time)
-{
+bool goStorageZone(double elapsed_time) {
+    drive_.acceptHeadingInput(Rotation2D::fromDegrees(180));
+    drive_.setState(0);
+
     static int state = 0;
     static double state_start_time = 0;
 
@@ -384,22 +375,14 @@ bool goLeftLine(double elapsed_time)
     }
 
     switch (state) {
-        case 0: // Set up and move
-            drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-            camera_.setState(1);
-            if (elapsed_time - state_start_time < 2000 && !camera_.objectPresent()) {
-                drive_.acceptInput(-100, 0, 0);
+        case 0: // Advance
+            if (elapsed_time - state_start_time < 5000) {
+                drive_.acceptInput(0, 100, 0);
                 return false;
             }
-            state = 1;
-            return false;
-
         case 1: // Stop
             drive_.acceptInput(0, 0, 0);
-            state = 0;
-            state_start_time = 0;
             return true;
-
         default:
             state = 0;
             state_start_time = 0;
@@ -407,11 +390,7 @@ bool goLeftLine(double elapsed_time)
     }
 }
 
-/**
- * @brief Moverse al arbol de la derecha
- * TODO: INCOPORRAR SENSORES DE LÍNEA PARA DETECTAR SI NOS VAMOS A SALIR DE LA PISTA
- */
-bool goRightLine(double elapsed_time)
+void goStorageMaduro()
 {
     static int state = 0;
     static double state_start_time = 0;
@@ -420,34 +399,13 @@ bool goRightLine(double elapsed_time)
         state_start_time = elapsed_time;
     }
 
-    switch (state) {
-        case 0: // Set up and move
-            drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-            camera_.setState(1);
-            if (elapsed_time - state_start_time < 2000 && !camera_.objectPresent()) {
-                drive_.acceptInput(100, 0, 0);
-                return false;
-            }
-            state = 1;
-            return false;
+    camera_.setState(2); // FETCH_STOREHOUSE_MADURO
 
-        case 1: // Stop
-            drive_.acceptInput(0, 0, 0);
-            state = 0;
-            state_start_time = 0;
-            return true;
 
-        default:
-            state = 0;
-            state_start_time = 0;
-            return false;
-    }
-}
-
-void goStorageMudo()
-{
     drive_.setState(0);
     drive_.acceptHeadingInput(Rotation2D::fromDegrees(180));
+
+    camera_.setState();
 }
 
 void goStoreGrown()
@@ -460,7 +418,7 @@ void goStorageOvergrown()
     // Implementation needed
 }
 
-bool dropBeans(double elapsed_time, double container_type)
+bool dropBeans(double elapsed_time, int container_type)
 {
     static int state = 0;
     static double state_start_time = 0;

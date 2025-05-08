@@ -22,10 +22,10 @@ private:
 
     // Control variables
     long start_time_ = 0;
-    bool direction_ = false; // 0 or false = left | 1 or true = right
+    bool direction_ = true; // 0 or false = left | 1 or true = right
     int current_tree_ = 0;
     int current_beans_ = 0;
-    bool droped_SOBREMADURO = false;
+    bool droped_SOBREMADURO = false; // 0 or MADURO = left | 1 or SOBREMADURO
     long state_start_time_ = 0; 
 
 public:
