@@ -8,17 +8,11 @@
 
 #include "statemanager.hpp"
 
-StateManager::StateManager() :
-    elevator_(),
-    gripper_(),
-    drive_(),
-    lower_sorter_(),
-    upper_sorter_()
-{}
+StateManager::StateManager() {}
 
 void StateManager::setState(RobotState state) {
     state_ = state;
-    state_start_time_ = 0; // reiniciar contador de tiempo del estado individual
+    state_start_time_ = 0;
 }
 
 RobotState StateManager::getState() {
@@ -32,19 +26,11 @@ unsigned long StateManager::getTimeSpent() {
 void StateManager::stateAction() {
     switch (state_) {
         case RobotState::INIT: {
-            /* 
-            * Inicializar micros
-            * Iniciar tiempo de partida
-            */
-            elevator_.setState(0);
-            gripper_.setState(0);
-            drive_.setState(0);
-            drive_.update();
-            start_time_ = millis();    
+            initStart();
             break;
         }
         case RobotState::EXIT_START: {
-
+            exitStart(getTimeSpent());
             break;
         }
         case RobotState::GO_TREES: {
@@ -52,7 +38,6 @@ void StateManager::stateAction() {
             break;
         }
         case RobotState::AVOID_LEFT_OBSTACLE: {//!checar, algo se ve muy sus
-
             break;
         }
         case RobotState::AVOID_RIGHT_OBSTACLE: { //!checar, algo se ve muy sus
@@ -92,11 +77,7 @@ void StateManager::stateAction() {
 }
 
 void StateManager::update() {
-    elevator_.update();
-    drive_.update();
-    gripper_.update();
-    lower_sorter_.update();
-    upper_sorter_.update();
+    globalUpdate();
     stateAction();
 }
 

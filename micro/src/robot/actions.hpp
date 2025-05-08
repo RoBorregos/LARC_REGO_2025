@@ -21,6 +21,7 @@ extern PIDController centerPID_;
 extern LineSensor line_sensor_;
 
 bool centerWithObject(double elapsed_time);
+bool initStart();
 bool exitStart(double elapsed_time);
 bool searchForTrees(double elapsed_time);
 bool goStorageMudo(double elapsed_time);
@@ -31,3 +32,4 @@ bool goLeftLine(double elapsed_time);
 bool goRightLine(double elapsed_time);
 bool pickBean(double elapsed_time, int level);
 bool dropBeans(double elapsed_time);
+bool globalUpdate();
