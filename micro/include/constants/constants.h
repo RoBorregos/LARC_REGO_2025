@@ -49,8 +49,8 @@ namespace Constants {
         constexpr float kWheelRadius = kWheelDiameter / 2.0; // in m
         constexpr float kWheelCircumference = 2 * M_PI * kWheelRadius; // in m
 
-        constexpr float kHeadingControllerKp = 365.0f;
-        constexpr float kHeadingControllerKi = 80.0f;
+        constexpr float kHeadingControllerKp = 240.0f;
+        constexpr float kHeadingControllerKi = 110.0f;
         constexpr float kHeadingControllerKd = 0.0f;
     }
 

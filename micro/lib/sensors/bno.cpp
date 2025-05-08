@@ -52,7 +52,7 @@ float BNO::wrapAngle(float angle) const {
 }
 
 float BNO::getYaw() const {
-    return wrapAngle(event.orientation.x);
+    return -wrapAngle(event.orientation.x);
 }
 
 float BNO::getRoll() const {

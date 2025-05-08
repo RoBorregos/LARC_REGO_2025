@@ -11,19 +11,23 @@
 #include "subsystem/Drive/Drive.hpp"
 const unsigned long UPDATE_INTERVAL = 20;
 
-StateManager state_manager_;
+extern Drive drive_;
 void setup()
 {
   Serial.begin(9600);
   Wire.begin();
-  state_manager_.setState(RobotState::INIT);
+
+  drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+  drive_.setState(0);
 
   interrupts();
 }
 
 void loop()
 {
-  state_manager_.update();
-  
+  drive_.update();
+
+  Pose2D pose = drive_.getPose();
+  Serial.println("Theta: " + String(pose.getTheta().getDegrees()));
   delay(UPDATE_INTERVAL);
 }
