@@ -157,6 +157,71 @@ bool exitStart(double elapsed_time)
     }
 }
 
+bool goLeftLimit(double elapsed_time){
+    drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+    drive_.setState(0);
+
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
+    }
+
+    switch (state) {
+        case 0: // Search
+            if (!line_sensor_.leftDetected()) {
+                drive_.acceptInput(-100, 0, 0);
+                return false;
+            }
+            state = 1;
+            return false;
+
+        case 1: // Stop
+            drive_.acceptInput(0, 0, 0);
+            state = 0;
+            state_start_time = 0;
+            return true;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
+    }
+}
+
+bool goRightLimit(double elapsed_time){
+    drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+    drive_.setState(0);
+
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
+    }
+
+    switch (state) {
+        case 0: // Search
+            if (!line_sensor_.rightDetected()) {
+                drive_.acceptInput(100, 0, 0);
+                return false;
+            }
+            state = 1;
+            return false;
+
+        case 1: // Stop
+            drive_.acceptInput(0, 0, 0);
+            state = 0;
+            state_start_time = 0;
+            return true;
+
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
+    }
+}
 /**
  * @brief Buscar arboles
  */
