@@ -1,6 +1,16 @@
 #include "PIDController.hpp"
 #include <math.h>
 
+PIDController::PIDController() 
+    : lastMeasurement_(0.0), lastSetpoint_(0.0), output_(0.0), enabled_(true), angleWrapping_(false) {
+    // Initialize the PID controller with default values
+    pid_ = new PID(&lastMeasurement_, &output_, &lastSetpoint_, 0.0, 0.0, 0.0, DIRECT);
+     
+    // Set the mode and output limits
+    pid_->SetMode(AUTOMATIC);
+    pid_->SetOutputLimits(-1.0, 1.0);
+}
+
 PIDController::PIDController(float kp, float ki, float kd, float outputMin, float outputMax)
     : lastMeasurement_(0.0), lastSetpoint_(0.0), output_(0.0), enabled_(true), angleWrapping_(false) {
     // Initialize the PID controller with pointers to our variables

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "subsystem/Drive/Drive.hpp"
-#include "subsystem/Elevator/Elevator.hpp"
-#include "subsystem/Gripper/Gripper.hpp"
-#include "subsystem/LowerSorter/LowerSorter.hpp"
-#include "subsystem/UpperSorter/UpperSorter.hpp"
-#include "subsystem/Vision/CameraLower.hpp"
-#include "subsystem/Vision/CameraUpper.hpp"
-#include "subsystem/LineSensor/LineSensor.h"
+#include "../subsystem/Drive/Drive.hpp"
+#include "../subsystem/Elevator/Elevator.hpp"
+#include "../subsystem/Gripper/Gripper.hpp"
+#include "../subsystem/LowerSorter/LowerSorter.hpp"
+#include "../subsystem/UpperSorter/UpperSorter.hpp"
+#include "../subsystem/Vision/CameraLower.hpp"
+#include "../subsystem/Vision/CameraUpper.hpp"
+#include "../subsystem/LineSensor/LineSensor.h"
 #include "PID_v1.h"
 
 extern Drive drive_;

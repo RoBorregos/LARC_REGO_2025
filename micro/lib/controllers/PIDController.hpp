@@ -7,6 +7,11 @@
 class PIDController {
 public:
     /**
+     * @brief Default constructor
+     */
+    PIDController();
+    
+    /**
      * @brief Construct a new PID Controller
      * 
      * @param kp Proportional gain

@@ -35,7 +35,7 @@ public:
 
   bool leftDetected();
   bool rightDetected();
-}
+};
 
 #endif
 
