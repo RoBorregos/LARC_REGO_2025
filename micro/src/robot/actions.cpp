@@ -50,6 +50,8 @@ bool pickBean(double elapsed_time, int level)
     static int state = 0;
     static double state_start_time = 0;
 
+    bool beanType = false; // false = MADURO, true = SOBREMADURO
+
     if (state_start_time == 0) {
         state_start_time = elapsed_time;
     }
@@ -63,9 +65,40 @@ bool pickBean(double elapsed_time, int level)
 
         case 1: // Center and pick
             if (centerWithObject(elapsed_time)) {
+                state = 2;
+                state_start_time = elapsed_time;
+            }
+            return false;
+        
+        case 2:
+            if(elapsed_time - state_start_time < 750) {
+                drive_.acceptInput(0,100,0);
+            } else {
+                drive_.acceptInput(0, 0, 0);
                 gripper_.setState(0);
-                state = 0;
-                state_start_time = 0;
+                state = 3;
+                state_start_time = elapsed_time;
+            }
+            return false;
+
+        case 3:
+            if(elapsed_time - state_start_time < 1000) {
+                drive_.acceptInput(0,-100,0);
+            } else {
+                drive_.acceptInput(0, 0, 0);
+                state = 4;
+                state_start_time = elapsed_time;
+            }
+            return false;
+        
+        case 4:
+            upper_sorter_.setState(1);
+            if(elapsed_time-state_start_time < 1500) {
+                elevator_.setState(1);
+            } else if (elapsed_time - state_start_time < 2000) {
+                gripper_.setState(1);
+            } else {
+                upper_sorter_.setState(beanType*2);
                 return true;
             }
             return false;

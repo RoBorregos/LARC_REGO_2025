@@ -23,10 +23,6 @@ unsigned long StateManager::getTimeSpent() {
     return millis() - start_time_;
 }
 
-void StateManager::stateAction() {
-    // This function is now deprecated as its logic has been moved to update()
-}
-
 void StateManager::stateTransition() {
     switch (state_) {
         case RobotState::INIT: {
@@ -128,7 +124,12 @@ void StateManager::update() {
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
-            action_completed = pickBean(getTimeSpent(), 2);
+            if (pickBean(getTimeSpent(), 2)){
+                current_beans_++;
+            }
+            if (current_beans_>=mid_level_beans_) {
+                action_completed = true;
+            }
             break;
         }
         case RobotState::PICK_LOW_LEVEL: {
