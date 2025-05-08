@@ -132,12 +132,7 @@ void StateManager::update() {
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
-            if (pickBean(getTimeSpent(), 2)){
-                current_beans_++;
-            }
-            if (current_beans_>=mid_level_beans_) {
-                action_completed = true;
-            }
+            action_completed = pickBean(getTimeSpent(), 2);
             break;
         }
         case RobotState::PICK_LOW_LEVEL: {
