@@ -9,7 +9,7 @@
 #include "pose2d.hpp"
 #include "robot/statemanager.hpp"
 
-const unsigned long UPDATE_INTERVAL = 20;
+const unsigned long UPDATE_INTERVAL = 50;
 
 StateManager state_manager_;
 
