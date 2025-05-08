@@ -169,6 +169,8 @@ bool searchForTrees(double elapsed_time)
         state_start_time = elapsed_time;
     }
 
+    camera_.setState(1); // FETCH_TREES
+
     switch (state) {
         case 0: // Search
             if (elapsed_time - state_start_time < 2000 || !camera_.objectPresent()) {

@@ -34,7 +34,57 @@ void StateManager::stateAction() {
             break;
         }
         case RobotState::GO_TREES: {
- 
+            searchForTrees(getTimeSpent());
+            break;
+        }
+        case RobotState::AVOID_LEFT_OBSTACLE: {//!checar, algo se ve muy sus
+            break;
+        }
+        case RobotState::AVOID_RIGHT_OBSTACLE: { //!checar, algo se ve muy sus
+            break;
+        }
+        case RobotState::GO_LEFT_LINE: {
+            
+            break;
+        }
+        case RobotState::GO_RIGHT_LINE: {
+     
+            break;
+        }
+        case RobotState::PICK_MID_LEVEL: {
+            pickBean(getTimeSpent(), 2);
+            break;
+        }
+        case RobotState::PICK_LOW_LEVEL: {
+            pickBean(getTimeSpent(), 1);
+            break;
+        }
+        case RobotState::GO_STORAGE_MADURO: {//TODO
+
+            break;
+        }
+        case RobotState::GO_STORAGE_SOBREMADURO: {//TODO
+            break;
+        }
+        case RobotState::DROP_BEANS: {
+           
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void StateManager::stateTransition() {
+    switch (state_) {
+        case RobotState::INIT: {
+            setState(RobotState::EXIT_START);
+            break;
+        }
+        case RobotState::EXIT_START: {
+            break;
+        }
+        case RobotState::GO_TREES: {
             break;
         }
         case RobotState::AVOID_LEFT_OBSTACLE: {//!checar, algo se ve muy sus
@@ -53,11 +103,9 @@ void StateManager::stateAction() {
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
-
             break;
         }
         case RobotState::PICK_LOW_LEVEL: {
-
             break;
         }
         case RobotState::GO_STORAGE_MADURO: {//TODO
@@ -80,4 +128,3 @@ void StateManager::update() {
     globalUpdate();
     stateAction();
 }
-
