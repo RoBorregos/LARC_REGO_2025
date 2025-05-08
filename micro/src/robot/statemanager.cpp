@@ -24,61 +24,7 @@ unsigned long StateManager::getTimeSpent() {
 }
 
 void StateManager::stateAction() {
-    switch (state_) {
-        case RobotState::INIT: {
-            initStart();
-            break;
-        }
-        case RobotState::EXIT_START: {
-            exitStart(getTimeSpent());
-            break;
-        }
-        case RobotState::GO_TREES: {
-            goTreeZone(getTimeSpent());
-            break;
-        }
-        case RobotState::AVOID_LEFT_OBSTACLE: {//!checar, algo se ve muy sus
-            //TODO:
-            break;
-        }
-        case RobotState::AVOID_RIGHT_OBSTACLE: { //!checar, algo se ve muy sus
-            //TODO:
-            break;
-        }
-        case RobotState::GO_LEFT_LINE: {
-            goLeftLimit(getTimeSpent());
-            break;
-        }
-        case RobotState::GO_RIGHT_LINE: {
-            //maybe
-            break;
-        }
-        case RobotState::SEARCH_TREES: {
-            searchForTrees(getTimeSpent());
-            break;
-        }
-        case RobotState::PICK_MID_LEVEL: {
-            pickBean(getTimeSpent(), 2);
-            break;
-        }
-        case RobotState::PICK_LOW_LEVEL: {
-            pickBean(getTimeSpent(), 1);
-            break;
-        }
-        case RobotState::GO_STORAGE_MADURO: {//TODO
-
-            break;
-        }
-        case RobotState::GO_STORAGE_SOBREMADURO: {//TODO
-            break;
-        }
-        case RobotState::DROP_BEANS: {
-           
-            break;
-        }
-        default:
-            break;
-    }
+    // This function is now deprecated as its logic has been moved to update()
 }
 
 void StateManager::stateTransition() {
@@ -88,41 +34,56 @@ void StateManager::stateTransition() {
             break;
         }
         case RobotState::EXIT_START: {
+            setState(RobotState::GO_TREES);
             break;
         }
         case RobotState::GO_TREES: {
+            setState(RobotState::SEARCH_TREES);
             break;
         }
-        case RobotState::AVOID_LEFT_OBSTACLE: {//!checar, algo se ve muy sus
+        case RobotState::AVOID_LEFT_OBSTACLE: {
+            setState(RobotState::GO_TREES);
             break;
         }
-        case RobotState::AVOID_RIGHT_OBSTACLE: { //!checar, algo se ve muy sus
-
+        case RobotState::AVOID_RIGHT_OBSTACLE: {
+            setState(RobotState::GO_TREES);
             break;
         }
         case RobotState::GO_LEFT_LINE: {
-
+            setState(RobotState::PICK_MID_LEVEL);
             break;
         }
         case RobotState::GO_RIGHT_LINE: {
-     
+            setState(RobotState::PICK_LOW_LEVEL);
+            break;
+        }
+        case RobotState::SEARCH_TREES: {
+            // Transition based on which tree was found
+            if (camera_.objectPresent()) {
+                setState(RobotState::GO_LEFT_LINE);
+            } else {
+                setState(RobotState::GO_RIGHT_LINE);
+            }
             break;
         }
         case RobotState::PICK_MID_LEVEL: {
+            setState(RobotState::GO_STORAGE_MADURO);
             break;
         }
         case RobotState::PICK_LOW_LEVEL: {
+            setState(RobotState::GO_STORAGE_SOBREMADURO);
             break;
         }
-        case RobotState::GO_STORAGE_MADURO: {//TODO
-
+        case RobotState::GO_STORAGE_MADURO: {
+            setState(RobotState::DROP_BEANS);
             break;
         }
-        case RobotState::GO_STORAGE_SOBREMADURO: {//TODO
+        case RobotState::GO_STORAGE_SOBREMADURO: {
+            setState(RobotState::DROP_BEANS);
             break;
         }
         case RobotState::DROP_BEANS: {
-           
+            setState(RobotState::SEARCH_TREES);
             break;
         }
         default:
@@ -132,5 +93,63 @@ void StateManager::stateTransition() {
 
 void StateManager::update() {
     globalUpdate();
-    stateAction();
+    bool action_completed = false;
+    
+    // Execute the current state's action and get completion status
+    switch (state_) {
+        case RobotState::INIT: {
+            action_completed = initStart();
+            break;
+        }
+        case RobotState::EXIT_START: {
+            action_completed = exitStart(getTimeSpent());
+            break;
+        }
+        case RobotState::GO_TREES: {
+            action_completed = goTreeZone(getTimeSpent());
+            break;
+        }
+        case RobotState::AVOID_LEFT_OBSTACLE: {
+            break;
+        }
+        case RobotState::AVOID_RIGHT_OBSTACLE: {
+            break;
+        }
+        case RobotState::GO_LEFT_LINE: {
+            action_completed = goLeftLimit(getTimeSpent());
+            break;
+        }
+        case RobotState::GO_RIGHT_LINE: {
+            action_completed = goRightLine(getTimeSpent());
+            break;
+        }
+        case RobotState::SEARCH_TREES: {
+            action_completed = searchForTrees(getTimeSpent());
+            break;
+        }
+        case RobotState::PICK_MID_LEVEL: {
+            action_completed = pickBean(getTimeSpent(), 2);
+            break;
+        }
+        case RobotState::PICK_LOW_LEVEL: {
+            action_completed = pickBean(getTimeSpent(), 1);
+            break;
+        }
+        case RobotState::GO_STORAGE_MADURO: {
+            break;
+        }
+        case RobotState::GO_STORAGE_SOBREMADURO: {
+            break;
+        }
+        case RobotState::DROP_BEANS: {
+            break;
+        }
+        default:
+            break;
+    }
+
+    // Only transition to next state if current action is completed
+    if (action_completed) {
+        stateTransition();
+    }
 }

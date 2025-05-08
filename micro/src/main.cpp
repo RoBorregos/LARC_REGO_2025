@@ -12,29 +12,20 @@
 #include "subsystem/LineSensor/LineSensor.h"
 const unsigned long UPDATE_INTERVAL = 20;
 
-extern Drive drive_;
-extern LineSensor line_sensor_;
+StateManager state_manager_;
 void setup()
 {
   Serial.begin(9600);
   Wire.begin();
 
-  drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
-  drive_.setState(0);
+  state_manager_.setState(RobotState::INIT);
 
   interrupts();
 }
 
 void loop()
 {
-  drive_.update();
 
-  if (line_sensor_.leftDetected()) {
-    Serial.println("Left detected");
-  }
-  if (line_sensor_.rightDetected()) {
-    Serial.println("Right detected");
-  }
-
+  state_manager_.update();
   delay(UPDATE_INTERVAL);
 }
