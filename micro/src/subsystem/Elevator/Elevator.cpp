@@ -6,75 +6,56 @@
  * @brief Implementation of the Elevador class to control a stepper motor
  */
 #include "Elevator.hpp"
+#include <Arduino.h>
 
-Elevator::Elevator()
-    : step_pin(Pins::kStepperPin), dir_pin(Pins::kDirPin), limit_pin(Pins::kLimitPin), actual_position_cm(0.0), target_position_cm(0.0)
-{
-    pinMode(step_pin, OUTPUT);
-    pinMode(dir_pin, OUTPUT);
-    digitalWrite(dir_pin, LOW);
-    pinMode(limit_pin, INPUT_PULLUP);
+Elevator::Elevator() : current_position_(ElevatorConstants::kIdleLevel) {
 }
 
-void Elevator::Move(int steps)
-{
-    if (steps > 0)
-    {
-        digitalWrite(dir_pin, LOW);
-    }
-    else
-    {
-        digitalWrite(dir_pin, HIGH);
-    }
-
-    for (int i = 0; i < steps; i++)
-    {
-        digitalWrite(step_pin, HIGH);
-        delayMicroseconds(800);
-        digitalWrite(step_pin, LOW);
-        delayMicroseconds(800);
+void Elevator::update() {
+    if (Serial.available()) {
+        String command = Serial.readStringUntil('\n');
+        command.trim();
+        
+        if (command.toInt() != 0 || command == "0") {
+            current_position_ = command.toInt();
+        }
     }
 }
 
-int Elevator::translateCmToSteps(float distance_cm)
-{
-    return (int)((distance_cm / (2.0 * M_PI * ElevatorConstants::kStepperRadius)) * ElevatorConstants::kStepsPerRevolution);
+bool Elevator::getLimitState() {
+    return digitalRead(limitPin) == LOW;
 }
 
-// Metodo para ver si el limit esta presionado
-bool Elevator::GetLimitState()
-{
-    return digitalRead(limit_pin) == LOW;
+void Elevator::resetPosition(double position) {
+    Serial.print("SET_POSITION:");
+    Serial.println(position);
 }
 
-// Método para actualizar la lógica de la máquina de estados
-void Elevator::update()
-{
-    switch (elevator_state_){
-        case ElevatorState::HOME:
-            target_position_cm = ElevatorConstants::kIdleLevel;
+void Elevator::setTargetPosition(int position) {
+    Serial.print("SET_TARGET:");
+    Serial.println(position);
+}
+
+int Elevator::getCurrentPosition() {
+    Serial.println("GET_POS");
+    return current_position_;
+}
+
+void Elevator::setState(int state) {
+    int target_pos = 0;
+    switch (state) {
+        case 0: // HOME
+            target_pos = ElevatorConstants::kIdleLevel;
             break;
-        case ElevatorState::LOWER:
-            target_position_cm = ElevatorConstants::kLowerLevel;
+        case 1: // LOWER
+            target_pos = ElevatorConstants::kLowerLevel;
             break;
-        case ElevatorState::MID:
-            target_position_cm = ElevatorConstants::kMidLevel;
+        case 2: // MID
+            target_pos = ElevatorConstants::kMidLevel;
             break;
-        case ElevatorState::UPPER:
-            target_position_cm = ElevatorConstants::kUpperLevel;
+        case 3: // UPPER
+            target_pos = ElevatorConstants::kUpperLevel;
             break;
     }
-
-    if (GetLimitState())
-    {
-        elevator_state_ = ElevatorState::HOME;
-        actual_position_cm = 0.0;
-    }
-
-    Move(translateCmToSteps(target_position_cm - actual_position_cm));
-}
-
-void Elevator::setState(int state)
-{
-    elevator_state_ = static_cast<ElevatorState>(state);
+    setTargetPosition(target_pos);
 }

@@ -6,8 +6,7 @@
  * @brief Head file of the Elevador class to control a stepper motor.
  */
 
-#ifndef ELEVATOR_H
-#define ELEVATOR_H
+#pragma once
 
 #include <Arduino.h>
 #include "constants/constants.h"
@@ -24,19 +23,16 @@ public:
 
     void update() override;           
     void setState(int state) override;
+    void setTargetPosition(int position);
+    int getCurrentPosition();
+
 private:
-
-    const int step_pin;
-    const int dir_pin;
-    const int limit_pin;
-
     float actual_position_cm;
     float target_position_cm;
 
     void Move(int steps);
-    int translateCmToSteps(float distance_cm);
-
-    bool GetLimitState();
+    void resetPosition(double position);
+    bool getLimitState();
 
     // States
     enum class ElevatorState
@@ -48,6 +44,7 @@ private:
     };
 
     ElevatorState elevator_state_ = ElevatorState::HOME;
-};
 
-#endif
+    int current_position_ = 0;
+    int limitPin = -1;
+};
