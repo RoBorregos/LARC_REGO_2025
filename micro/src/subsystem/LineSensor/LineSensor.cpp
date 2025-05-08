@@ -56,9 +56,11 @@ void LineSensor::update() {
 }
 
 bool LineSensor::leftDetected() {
+  update(); // to avoid having to modify the statemachine
   return left_detected_;
 }
 bool LineSensor::rightDetected() {
+  update(); // to avoid having to modify the statemachine
   return right_detected_;
 }
 
