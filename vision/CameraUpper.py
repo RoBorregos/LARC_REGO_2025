@@ -6,11 +6,11 @@ import time
 class CameraUpper:
     def __init__(self, port=None, baudrate=9600, timeout=1, camera_index=0, min_area=3800, max_area=50000, max_diameter=250):
         self.colors = {
-            "Red": ([0, 129, 40], [17, 255, 255]),
-            "Blue": ([99, 114, 141], [112, 255, 249]),
-            "Orange": ([2, 142, 200], [19, 250, 255]),
-            "Yellow": ([23, 76, 123], [33, 216, 197]),
-            "Black": ([0, 0, 0], [180, 255, 34]),
+            "Red": ([0, 60, 49], [9, 255, 255]),
+            "Blue": ([90, 85, 67], [147, 255, 255]),
+            "Orange": ([0, 59, 56], [44, 255, 255]),
+            "Yellow": ([16, 49, 105], [40, 255, 255]),
+            "Black": ([0, 0, 67], [179, 65, 106]),
         }
         self.color_bgr_values = {
             "Red": (0, 0, 255),
