@@ -34,21 +34,27 @@ void StateManager::stateAction() {
             break;
         }
         case RobotState::GO_TREES: {
-            searchForTrees(getTimeSpent());
+            goTreeZone(getTimeSpent());
             break;
         }
         case RobotState::AVOID_LEFT_OBSTACLE: {//!checar, algo se ve muy sus
+            //TODO:
             break;
         }
         case RobotState::AVOID_RIGHT_OBSTACLE: { //!checar, algo se ve muy sus
+            //TODO:
             break;
         }
         case RobotState::GO_LEFT_LINE: {
-            
+            goLeftLimit(getTimeSpent());
             break;
         }
         case RobotState::GO_RIGHT_LINE: {
-     
+            //maybe
+            break;
+        }
+        case RobotState::SEARCH_TREES: {
+            searchForTrees(getTimeSpent());
             break;
         }
         case RobotState::PICK_MID_LEVEL: {

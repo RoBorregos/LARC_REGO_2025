@@ -21,6 +21,7 @@ extern Camera camera_;
 bool centerWithObject(double elapsed_time);
 bool initStart();
 bool exitStart(double elapsed_time);
+bool goTreeZone(double elapsed_time);
 bool goLeftLimit(double elapsed_time);
 bool goRightLimit(double elapsed_time);
 bool searchForTrees(double elapsed_time);

@@ -18,6 +18,7 @@ enum class RobotState {
     AVOID_RIGHT_OBSTACLE,
     GO_LEFT_LINE,
     GO_RIGHT_LINE,
+    SEARCH_TREES,
     PICK_MID_LEVEL,
     PICK_LOW_LEVEL,
     MOVE_NEXT_TREE,

@@ -157,6 +157,33 @@ bool exitStart(double elapsed_time)
     }
 }
 
+bool goTreeZone(double elapsed_time) { //! incomplete function, obstacle detection is missing
+    drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
+    drive_.setState(0);
+
+    static int state = 0;
+    static double state_start_time = 0;
+
+    if (state_start_time == 0) {
+        state_start_time = elapsed_time;
+    }
+
+    switch (state) {
+        case 0: // Advance
+            if (elapsed_time - state_start_time < 5000) {
+                drive_.acceptInput(-100, 0, 0);
+                return false;
+            }
+        case 1: // Stop
+            drive_.acceptInput(0, 0, 0);
+            return true;
+        default:
+            state = 0;
+            state_start_time = 0;
+            return false;
+    }
+}
+
 bool goLeftLimit(double elapsed_time){
     drive_.acceptHeadingInput(Rotation2D::fromDegrees(0));
     drive_.setState(0);
