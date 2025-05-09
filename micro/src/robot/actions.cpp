@@ -93,15 +93,80 @@ bool alignWithObject(double elapsed_time, float desired_distance = 10.0)
 
 bool pickBean(double elapsed_time, int level)
 {
-    if (elapsed_time < 5000)
+    static int state = 0;
+    static double state_start_time = 0;
+
+    bool beanType = true; // false = MADURO, true = SOBREMADURO
+
+    if (state_start_time == 0)
     {
-        Serial.print("SET_SPEED:");
-        Serial.println(50);
+        state_start_time = elapsed_time;
     }
-    else
+
+    switch (state)
     {
-        Serial.print("SET_SPEED:");
-        Serial.println(0);
+    case 0: // Set gripper and elevator
+        gripper_.setState(1);
+        state = 1;
+        state_start_time = elapsed_time;
+        return false;
+    case 1: // Center and pick
+            /* if (camera_.getBeanType() != BeanConstants::NONE) {
+                BeanConstants::BeanType type = camera_.getBeanType();
+                beanType = (type == BeanConstants::SOBREMADURO);  // false = MADURO, true = SOBREMADURO
+                if (centerWithObject(elapsed_time)) {
+                    state = 2;
+                    state_start_time = elapsed_time;
+                }
+            } else {
+            } */
+        state = 2;
+        state_start_time = elapsed_time;
+        return false;
+
+    case 2:
+        if (elapsed_time - state_start_time < 750)
+        {
+            // drive_.acceptInput(0,100,0);
+        }
+        else
+        {
+            drive_.acceptInput(0, 0, 0);
+            gripper_.setState(0);
+            state = 3;
+            state_start_time = elapsed_time;
+        }
+        return false;
+
+    case 3:
+        if (elapsed_time - state_start_time < 1000)
+        {
+            drive_.acceptInput(0,-100,0);
+            upper_sorter_.setState(1);
+        }
+        else
+        {
+            drive_.acceptInput(0, 0, 0);
+            state = 4;
+            state_start_time = elapsed_time;
+        }
+        return false;
+
+    case 4:
+        if (elapsed_time - state_start_time < 1000)
+        {
+            gripper_.setState(1);
+        }
+        else
+        {
+            upper_sorter_.setState(beanType * 2);
+            return true;
+        }
+        return false;
+    default:
+        state = 0;
+        state_start_time = 0;
+        return false;
     }
 }
 
@@ -340,137 +405,164 @@ bool searchForTrees(double elapsed_time, bool direction)
     }
 }
 
-bool avoidPool(double elapsed_time) {
+bool avoidPool(double elapsed_time)
+{
     static int state = 0;
     static int state_start_time = 0;
     static int recovery_time = 0;
 
-    switch (state) {
-        case 0: {
-            // Step 1: Stop + slight backoff
-            if (!camera_.objectPresent()) return true;
-            drive_.acceptInput(0, -100, 0); // back up a bit
-            if (elapsed_time > 500) {
-                drive_.acceptInput(0, 0, 0),
+    switch (state)
+    {
+    case 0:
+    {
+        // Step 1: Stop + slight backoff
+        if (!camera_.objectPresent())
+            return true;
+        drive_.acceptInput(0, -100, 0); // back up a bit
+        if (elapsed_time > 500)
+        {
+            drive_.acceptInput(0, 0, 0),
                 state++;
-                state_start_time = elapsed_time;
-            }
-            break;
+            state_start_time = elapsed_time;
         }
+        break;
+    }
 
-        case 1: {
-            // Initial
-            // Response: Go left
-            drive_.acceptInput(-100, 0, 0); // strafe left
+    case 1:
+    {
+        // Initial
+        // Response: Go left
+        drive_.acceptInput(-100, 0, 0); // strafe left
 
-            if (line_sensor_.leftDetected()) {
+        if (line_sensor_.leftDetected())
+        {
+            drive_.acceptInput(0, 0, 0);
+            state = 2;
+            state_start_time = elapsed_time;
+            recovery_time = elapsed_time;
+        }
+        // Time should correlate to movement across one slot
+        else if (elapsed_time - state_start_time > 1000)
+        {
+            // Check if pool
+            if (camera_.objectPresent())
+            {
                 drive_.acceptInput(0, 0, 0);
-                state = 2;
+                state = 3;
                 state_start_time = elapsed_time;
-                recovery_time = elapsed_time;
             }
-            // Time should correlate to movement across one slot
-            else if (elapsed_time - state_start_time > 1000) {
-                // Check if pool 
-                if (camera_.objectPresent()) {
-                    drive_.acceptInput(0, 0, 0);
-                    state = 3; 
-                    state_start_time = elapsed_time;
-                }
-                else {
-                    // Coast is clear :)
-                    return true;
-                }
+            else
+            {
+                // Coast is clear :)
+                return true;
             }
-
-            break;
         }
 
-        case 2: {
-            // Left -> found line
-            // Response: Go back -> go right
-            drive_.acceptInput(100, 0, 0); // right
+        break;
+    }
 
-            if (elapsed_time - state_start_time > 1000 + recovery_time) {
-                // Check if pool
-                if (camera_.objectPresent()) {
-                    drive_.acceptInput(0, 0, 0);
-                    state_start_time = elapsed_time;
-                    state = 4;
-                }
-                else {
-                    // Coast is clear :)
-                    return true;
-                }
-            }
-            
-            break;
-        }
+    case 2:
+    {
+        // Left -> found line
+        // Response: Go back -> go right
+        drive_.acceptInput(100, 0, 0); // right
 
-        case 3: {
-            // Left -> found pool
-            // Response: Go left
-            drive_.acceptInput(-100, 0, 0); // strafe left
-
-            if (line_sensor_.leftDetected()) {
+        if (elapsed_time - state_start_time > 1000 + recovery_time)
+        {
+            // Check if pool
+            if (camera_.objectPresent())
+            {
                 drive_.acceptInput(0, 0, 0);
-                state = 5;
                 state_start_time = elapsed_time;
-                recovery_time = elapsed_time;
+                state = 4;
             }
-            // Time should correlate to movement across one slot
-            else if (elapsed_time - state_start_time > 1000) {
-                // Check if pool 
-                if (camera_.objectPresent()) {
-                    drive_.acceptInput(0, 0, 0);
-                    state = 3; 
-                    state_start_time = elapsed_time;
-                }
-                else {
-                    // Coast is clear :)
-                    return true;
-                }
+            else
+            {
+                // Coast is clear :)
+                return true;
             }
-            break;
         }
 
-        case 4: {
-            // left -> found line -> returned -> right -> pool
-            // Response: Go right
-            drive_.acceptInput(100, 0, 0); // strafe right
+        break;
+    }
 
-            // Time should correlate to movement across one slot
-            if (elapsed_time - state_start_time > 1000) {
-                // Check if pool (not strictly necessary)
-                if (camera_.objectPresent()) {
-                    drive_.acceptInput(0, 0, 0);
-                    state = 4;
-                    state_start_time = elapsed_time;
-                }
-                else {
-                    // Coast is clear :)
-                    return true;
-                }
-            }
-            break;
+    case 3:
+    {
+        // Left -> found pool
+        // Response: Go left
+        drive_.acceptInput(-100, 0, 0); // strafe left
+
+        if (line_sensor_.leftDetected())
+        {
+            drive_.acceptInput(0, 0, 0);
+            state = 5;
+            state_start_time = elapsed_time;
+            recovery_time = elapsed_time;
         }
-        case 5: {
-            // left -> found pool -> found line
-            // Response: Go back, go right, go right
-            if (elapsed_time - state_start_time > recovery_time + 2000) {
-                // Check if pool (not strictly necessary)
-                if (camera_.objectPresent()) {
+        // Time should correlate to movement across one slot
+        else if (elapsed_time - state_start_time > 1000)
+        {
+            // Check if pool
+            if (camera_.objectPresent())
+            {
+                drive_.acceptInput(0, 0, 0);
+                state = 3;
+                state_start_time = elapsed_time;
+            }
+            else
+            {
+                // Coast is clear :)
+                return true;
+            }
+        }
+        break;
+    }
+
+    case 4:
+    {
+        // left -> found line -> returned -> right -> pool
+        // Response: Go right
+        drive_.acceptInput(100, 0, 0); // strafe right
+
+        // Time should correlate to movement across one slot
+        if (elapsed_time - state_start_time > 1000)
+        {
+            // Check if pool (not strictly necessary)
+            if (camera_.objectPresent())
+            {
                 drive_.acceptInput(0, 0, 0);
                 state = 4;
                 state_start_time = elapsed_time;
-                }
-                else {
-                    // Coast is clear :)
-                    return true;
-                }
             }
-            break;
+            else
+            {
+                // Coast is clear :)
+                return true;
+            }
         }
+        break;
+    }
+    case 5:
+    {
+        // left -> found pool -> found line
+        // Response: Go back, go right, go right
+        if (elapsed_time - state_start_time > recovery_time + 2000)
+        {
+            // Check if pool (not strictly necessary)
+            if (camera_.objectPresent())
+            {
+                drive_.acceptInput(0, 0, 0);
+                state = 4;
+                state_start_time = elapsed_time;
+            }
+            else
+            {
+                // Coast is clear :)
+                return true;
+            }
+        }
+        break;
+    }
     }
     return false;
 }
