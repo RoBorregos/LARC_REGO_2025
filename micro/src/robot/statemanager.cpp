@@ -37,12 +37,8 @@ void StateManager::stateTransition() {
             setState(RobotState::GO_LEFT_LINE);
             break;
         }
-        case RobotState::AVOID_LEFT_OBSTACLE: {
-            //setState(RobotState::GO_TREES);
-            break;
-        }
-        case RobotState::AVOID_RIGHT_OBSTACLE: {
-            //setState(RobotState::GO_TREES);
+        case RobotState::AVOID_POOL: {
+            setState(RobotState::GO_TREES);
             break;
         }
         case RobotState::GO_LEFT_LINE: {
