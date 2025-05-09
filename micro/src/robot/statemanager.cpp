@@ -29,7 +29,7 @@ void StateManager::stateTransition() {
             setState(RobotState::EXIT_START);
             break;
         }
-        case RobotState::EXIT_START: {
+        /* case RobotState::EXIT_START: {
             setState(RobotState::GO_TREES);
             break;
         }
@@ -63,21 +63,22 @@ void StateManager::stateTransition() {
                 current_beans_ = 0;
             }
             break;
-        }
+        } */
         case RobotState::PICK_LOW_LEVEL: {
-            direction_ = false; //no quiero fallos
+            setState(RobotState::IDLE);
+            /* direction_ = false;
             current_beans_++;
             if (current_beans_>=low_level_beans_) {
                 if (current_tree_ == 1) {
-                    setState(RobotState::GO_STORAGE_MADURO);
+                    setState(RobotState::IDLE);
                 } else {
-                    setState(RobotState::SEARCH_TREES);
+                    setState(RobotState::IDLE);
                 }
                 current_beans_ = 0;
-            }
+            } */
             break;
         }
-        case RobotState::GO_STORAGES: {
+        /* case RobotState::GO_STORAGES: {
             setState(RobotState::GO_RIGHT_LINE);
             break;
         }
@@ -97,7 +98,7 @@ void StateManager::stateTransition() {
             if(!droped_SOBREMADURO)
                 setState(RobotState::GO_STORAGE_SOBREMADURO);
             break;
-        }
+        } */
         default:
             break;
     }
@@ -109,7 +110,7 @@ void StateManager::update() {
     
     // Execute the current state's action and get completion status
     switch (state_) {
-        case RobotState::INIT: {
+        /* case RobotState::INIT: {
             action_completed = initStart();
             break;
         }
@@ -136,12 +137,12 @@ void StateManager::update() {
         case RobotState::PICK_MID_LEVEL: {
             action_completed = pickBean(getTimeSpent(), 2);
             break;
-        }
+        } */
         case RobotState::PICK_LOW_LEVEL: {
             action_completed = pickBean(getTimeSpent(), 1);
             break;
         }
-        case RobotState::GO_STORAGES: {
+        /* case RobotState::GO_STORAGES: {
             action_completed = goStorageZone(getTimeSpent());
             break;
         }
@@ -160,13 +161,13 @@ void StateManager::update() {
         case RobotState::DROP_BEANS: {
             action_completed = dropBeans(getTimeSpent(), droped_SOBREMADURO+2);
             break;
-        }
+        } */
         default:
             break;
     }
 
     // Only transition to next state if current action is completed
     if (action_completed) {
-        stateTransition();
+        //stateTransition();
     }
 }
