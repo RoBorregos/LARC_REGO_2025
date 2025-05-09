@@ -24,7 +24,8 @@ enum class RobotState {
     GO_STORAGES,
     GO_STORAGE_MADURO,
     GO_STORAGE_SOBREMADURO, //Robo no tendrá esto
-    DROP_BEANS
+    DROP_BEANS,
+    IDLE,
 };
 
 #endif //ROBOTSTATE_H
