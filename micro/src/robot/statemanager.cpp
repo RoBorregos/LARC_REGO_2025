@@ -121,10 +121,8 @@ void StateManager::update() {
             action_completed = goTreeZone(getTimeSpent());
             break;
         }
-        case RobotState::AVOID_LEFT_OBSTACLE: { //TODO:
-            break;
-        }
-        case RobotState::AVOID_RIGHT_OBSTACLE: { //TODO:
+        case RobotState::AVOID_POOL: { //TODO:
+            action_completed = avoidPool(getTimeSpent());
             break;
         }
         case RobotState::GO_LEFT_LINE: {
