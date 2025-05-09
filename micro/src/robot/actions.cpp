@@ -331,41 +331,138 @@ bool searchForTrees(double elapsed_time, bool direction)
     }
 }
 
-bool avoidLeftObstacle() //TODO:
-{
-    /*
-     * si hay una alberca presente moverse a la izquierda para evitar obstaculo
-     * sino, avanzar hacia adelante
-     */
-    /* cam_low_->receiveData();
+bool avoidPool(double elapsed_time) {
+    static int state = 0;
+    static int state_start_time = 0;
+    static int recovery_time = 0;
 
-    if (cam_low_->objectPresent()) {
-        drive_->moveLeft(100);
-    } else {
-        if (state_start_time_ == 0)
-            state_start_time_ = millis();
+    switch (state) {
+        case 0: {
+            // Step 1: Stop + slight backoff
+            if (!camera_.objectPresent()) return true;
+            drive_.acceptInput(0, -100, 0); // back up a bit
+            if (elapsed_time > 500) {
+                drive_.acceptInput(0, 0, 0),
+                state++;
+                state_start_time = elapsed_time;
+            }
+            break;
+        }
 
-        drive_->acceptInput(0,100,0);
-    } */
-    return false;
-}
+        case 1: {
+            // Initial
+            // Response: Go left
+            drive_.acceptInput(-100, 0, 0); // strafe left
 
-bool avoidRightObstacle() //TODO:
-{
-    /*
-     * si hay una alberca presente moverse a la derecha para evitar obstaculo
-     * sino, avanzar hacia adelante
-     */
-    /* cam_low_->receiveData();
+            if (line_sensor_.leftDetected()) {
+                drive_.acceptInput(0, 0, 0);
+                state = 2;
+                state_start_time = elapsed_time;
+                recovery_time = elapsed_time;
+            }
+            // Time should correlate to movement across one slot
+            else if (elapsed_time - state_start_time > 1000) {
+                // Check if pool 
+                if (camera_.objectPresent()) {
+                    drive_.acceptInput(0, 0, 0);
+                    state = 3; 
+                    state_start_time = elapsed_time;
+                }
+                else {
+                    // Coast is clear :)
+                    return true;
+                }
+            }
 
-    if (cam_low_->objectPresent()) {
-            drive_->moveRight(100);
-    } else {
-        if (state_start_time_ == 0)
-            state_start_time_ = millis();
+            break;
+        }
 
-        drive_->acceptInput(0,100,0);
-    } */
+        case 2: {
+            // Left -> found line
+            // Response: Go back -> go right
+            drive_.acceptInput(100, 0, 0); // right
+
+            if (elapsed_time - state_start_time > 1000 + recovery_time) {
+                // Check if pool
+                if (camera_.objectPresent()) {
+                    drive_.acceptInput(0, 0, 0);
+                    state_start_time = elapsed_time;
+                    state = 4;
+                }
+                else {
+                    // Coast is clear :)
+                    return true;
+                }
+            }
+            
+            break;
+        }
+
+        case 3: {
+            // Left -> found pool
+            // Response: Go left
+            drive_.acceptInput(-100, 0, 0); // strafe left
+
+            if (line_sensor_.leftDetected()) {
+                drive_.acceptInput(0, 0, 0);
+                state = 5;
+                state_start_time = elapsed_time;
+                recovery_time = elapsed_time;
+            }
+            // Time should correlate to movement across one slot
+            else if (elapsed_time - state_start_time > 1000) {
+                // Check if pool 
+                if (camera_.objectPresent()) {
+                    drive_.acceptInput(0, 0, 0);
+                    state = 3; 
+                    state_start_time = elapsed_time;
+                }
+                else {
+                    // Coast is clear :)
+                    return true;
+                }
+            }
+            break;
+        }
+
+        case 4: {
+            // left -> found line -> returned -> right -> pool
+            // Response: Go right
+            drive_.acceptInput(100, 0, 0); // strafe right
+
+            // Time should correlate to movement across one slot
+            if (elapsed_time - state_start_time > 1000) {
+                // Check if pool (not strictly necessary)
+                if (camera_.objectPresent()) {
+                    drive_.acceptInput(0, 0, 0);
+                    state = 4;
+                    state_start_time = elapsed_time;
+                }
+                else {
+                    // Coast is clear :)
+                    return true;
+                }
+            }
+            break;
+        }
+        case 5: {
+            // left -> found pool -> found line
+            // Response: Go back, go right, go right
+            if (elapsed_time - state_start_time > recovery_time + 2000) {
+                // Check if pool (not strictly necessary)
+                if (camera_.objectPresent()) {
+                drive_.acceptInput(0, 0, 0);
+                state = 4;
+                state_start_time = elapsed_time;
+                }
+                else {
+                    // Coast is clear :)
+                    return true;
+                }
+            }
+            break;
+        }
+    }
     return false;
 }
 
