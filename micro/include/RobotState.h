@@ -14,8 +14,7 @@ enum class RobotState {
     //CALIBRATE, //(si lo hacemos bien)
     EXIT_START,
     GO_TREES,
-    AVOID_LEFT_OBSTACLE,
-    AVOID_RIGHT_OBSTACLE,
+    AVOID POOL,
     GO_LEFT_LINE,
     GO_RIGHT_LINE,
     SEARCH_TREES,
