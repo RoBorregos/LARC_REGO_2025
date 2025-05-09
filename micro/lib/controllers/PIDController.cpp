@@ -28,7 +28,6 @@ PIDController::~PIDController() {
 
 float PIDController::update(float measurement, float setpoint) {
     if (!enabled_) {
-        Serial.println("PID Controller is disabled");
         return 0.0f;
     }
     
@@ -92,7 +91,6 @@ void PIDController::setOutputLimits(float min, float max) {
 
 void PIDController::setEnabled(bool enabled) {
     enabled_ = enabled;
-    Serial.println("PID Controller " + String(enabled ? "enabled" : "disabled"));
     if (!enabled) {
         reset();
     }
@@ -112,7 +110,6 @@ float PIDController::getOutput() const {
 
 void PIDController::setAngleWrapping(bool enabled) {
     angleWrapping_ = enabled;
-    Serial.println("Angle wrapping " + String(enabled ? "enabled" : "disabled"));
 }
 
 bool PIDController::isAngleWrappingEnabled() const {

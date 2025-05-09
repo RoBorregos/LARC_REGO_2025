@@ -76,7 +76,6 @@ void Odometry::update(float front_left_encoder, float front_right_encoder, float
 void Odometry::updateWithBNO(float front_left_encoder, float front_right_encoder, float rear_left_encoder, float rear_right_encoder) {
     if (!use_bno_) {
         // If BNO is not available, fall back to regular odometry
-        Serial.println("BNO not available, using regular odometry");
         update(front_left_encoder, front_right_encoder, rear_left_encoder, rear_right_encoder);
         return;
     }
