@@ -14,13 +14,10 @@
 namespace Constants {
 
     namespace ElevatorConstants {
-        constexpr float kUpperLevel = 15.0; // in cm
-        constexpr float kMidLevel = 10.0; // in cm
-        constexpr float kLowerLevel = 5.0; // in cm
-        constexpr float kIdleLevel = 0.0; // in cm
-
-        constexpr float kStepsPerRevolution = 200;
-        constexpr float kStepperRadius = 0.75; // in cm
+        constexpr float kUpperLevel = -25000.0; 
+        constexpr float kMidLevel = -15000.0; 
+        constexpr float kLowerLevel = -10000.0;
+        constexpr float kIdleLevel = 0.0; 
 
         constexpr float kP = 0.01;
         constexpr float kI = 0.00;

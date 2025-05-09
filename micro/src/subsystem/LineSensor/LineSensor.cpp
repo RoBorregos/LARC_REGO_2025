@@ -7,6 +7,7 @@
  */
 
 #include "LineSensor.h"
+#include <cstdlib>
 
 /*LineSensor::LineSensor() {
   this->leftPin = Pins::kLineSensorLeftPin;
@@ -29,38 +30,43 @@ bool LineSensor::rightDetected() {
 LineSensor::LineSensor() {}
 
 void LineSensor::update() {
-  if (!Serial.available()) return;
-
   String received = Serial.readStringUntil('\n');
   received.trim();
-
-  if (received.startsWith("Left:")) {
-    String value = received.substring(5);
-    value.trim();
-    if (value == "YES") {
-      left_detected_ = true;
-      right_detected_ = false;
-    } else {
-      left_detected_ = false;
+  
+  int leftPos = received.indexOf("Left:");
+  int rightPos = received.indexOf("Right:");
+  
+  if (leftPos != -1) {
+    String leftValue = received.substring(leftPos + 5, rightPos != -1 ? rightPos : received.length());
+    leftValue = leftValue.trim();
+    bool new_left_detected = (leftValue == "YES");
+    if (new_left_detected && !left_detected_) {
+      left_detection_time_ = millis();
     }
-  } else if (received.startsWith("Right:")) {
-    String value = received.substring(6);
-    value.trim();
-    if (value == "YES") {
-      right_detected_ = true;
-      left_detected_ = false;
-    } else {
-      right_detected_ = false;
+    left_detected_ = new_left_detected;
+  }
+  
+  if (rightPos != -1) {
+    String rightValue = received.substring(rightPos + 6);
+    rightValue = rightValue.trim();
+    bool new_right_detected = (rightValue == "YES");
+    if (new_right_detected && !right_detected_) {
+      right_detection_time_ = millis();
     }
+    right_detected_ = new_right_detected;
   }
 }
 
 bool LineSensor::leftDetected() {
-  update(); // to avoid having to modify the statemachine
   return left_detected_;
 }
+
 bool LineSensor::rightDetected() {
-  update(); // to avoid having to modify the statemachine
   return right_detected_;
+}
+
+bool LineSensor::bothDetectedWithin500ms() {
+  if (!left_detected_ || !right_detected_) return false;
+  return std::abs(static_cast<long>(left_detection_time_ - right_detection_time_)) <= 500;
 }
 
