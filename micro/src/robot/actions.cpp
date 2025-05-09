@@ -29,41 +29,6 @@ bool globalUpdate()
     return true;
 }
 
-void moveToLow(double time_elapsed)
-{
-    if (time_elapsed < 1000)
-    {
-        Serial.print("SET_SPEED:");
-        Serial.println(50);
-    }
-    else
-    {
-        Serial.print("SET_SPEED:");
-        Serial.println(0);
-    }
-}
-
-void moveToMid(double time_elapsed)
-{
-    if (time_elapsed < 3000)
-    {
-        Serial.print("SET_SPEED:");
-        Serial.println(100);
-        gripper_.setState(1);
-    }
-    else if (time_elapsed < 4000)
-    {
-        Serial.print("SET_SPEED:");
-        Serial.println(0);
-    }
-    else
-    {
-        Serial.print("SET_SPEED:");
-        Serial.println(0);
-        gripper_.setState(0);
-    }
-}
-
 bool centerWithObject(double elapsed_time) // Center in X offset
 {
     float offsetX = camera_.getOffset_X();
@@ -163,44 +128,6 @@ bool pickBean(double elapsed_time, int level)
             return true;
         }
         return false;
-    default:
-        state = 0;
-        state_start_time = 0;
-        return false;
-    }
-}
-
-/**
- * @brief Sortear la pelota
- */
-bool sortBean(double elapsed_time, int category)
-{
-    static int state = 0;
-    static double state_start_time = 0;
-
-    if (state_start_time == 0)
-    {
-        state_start_time = elapsed_time;
-    }
-
-    switch (state)
-    {
-    case 0: // Set elevator and sorter
-        elevator_.setState(0);
-        upper_sorter_.setState(category);
-        state = 1;
-        return false;
-
-    case 1: // Wait and release
-        if (elapsed_time - state_start_time > 1000)
-        {
-            gripper_.setState(0);
-            state = 0;
-            state_start_time = 0;
-            return true;
-        }
-        return false;
-
     default:
         state = 0;
         state_start_time = 0;
@@ -705,3 +632,40 @@ bool dropBeans(double elapsed_time, int container_type)
         return false;
     }
 }
+
+
+/* 
+void moveToLow(double time_elapsed)
+{
+    if (time_elapsed < 1000)
+    {
+        Serial.print("SET_SPEED:");
+        Serial.println(50);
+    }
+    else
+    {
+        Serial.print("SET_SPEED:");
+        Serial.println(0);
+    }
+}
+
+void moveToMid(double time_elapsed)
+{
+    if (time_elapsed < 3000)
+    {
+        Serial.print("SET_SPEED:");
+        Serial.println(100);
+        gripper_.setState(1);
+    }
+    else if (time_elapsed < 4000)
+    {
+        Serial.print("SET_SPEED:");
+        Serial.println(0);
+    }
+    else
+    {
+        Serial.print("SET_SPEED:");
+        Serial.println(0);
+        gripper_.setState(0);
+    }
+} */
